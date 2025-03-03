@@ -45,6 +45,7 @@ class ItemViewModel(private val repository: ItemRepository): ViewModel() {
     suspend fun update(item: Item) {
         viewModelScope.launch {
             repository.update(item)
+            _allItems.value = repository.allItems()
         }
     }
 }

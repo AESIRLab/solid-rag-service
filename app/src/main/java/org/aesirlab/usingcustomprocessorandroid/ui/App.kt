@@ -105,7 +105,13 @@ fun App() {
                                 viewModel.update(item)
                             }
                         }
-                    })
+                    },
+                    onDeleteClick = { item ->
+                        coroutineScope.launch {
+                            viewModel.delete(item)
+                        }
+                    }
+                )
             }
         }
     }

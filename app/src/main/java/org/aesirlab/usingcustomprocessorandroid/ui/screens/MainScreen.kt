@@ -24,7 +24,8 @@ fun MainScreen(
     items: List<Item>,
     onAddClick: (String) -> Unit,
     onIncreaseClick: (Item) -> Unit,
-    onDecreaseClick: (Item) -> Unit
+    onDecreaseClick: (Item) -> Unit,
+    onDeleteClick: (Item) -> Unit
 ) {
     val appCtx = LocalContext.current.applicationContext
     val itemName = remember {
@@ -33,7 +34,7 @@ fun MainScreen(
     Column {
         Row {
             TextField(value = itemName.value, onValueChange = { itemName.value = it }, label = { Text("Add new Item") })
-            Spacer(modifier = Modifier.padding(horizontal = 16.dp))
+            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
             Button(onClick = {
                 if (itemName.value.isEmpty()) {
                     Toast
@@ -52,7 +53,7 @@ fun MainScreen(
         } else {
             LazyColumn(Modifier.fillMaxSize()) {
                 items(items) { item ->
-                    ItemComp(item, onIncreaseClick, onDecreaseClick)
+                    ItemComp(item, onIncreaseClick, onDecreaseClick, onDeleteClick)
                 }
             }
         }
@@ -63,10 +64,12 @@ fun MainScreen(
 fun ItemComp(
     item: Item,
     onIncreaseClick: (Item) -> Unit,
-    onDecreaseClick: (Item) -> Unit
+    onDecreaseClick: (Item) -> Unit,
+    onDeleteClick: (Item) -> Unit
 ) {
+    val name = item.name.split("^^")[0]
     Row {
-        Text(text = item.name)
+        Text(text = name)
         Spacer(modifier = Modifier.padding(horizontal = 8.dp))
         Text(text = item.amount.toString())
         Button(onClick = { onIncreaseClick(item) }) {
@@ -74,6 +77,9 @@ fun ItemComp(
         }
         Button(onClick = { onDecreaseClick(item) }) {
             Text("V")
+        }
+        Button(onClick = { onDeleteClick(item) }) {
+            Text("Delete Item")
         }
     }
 }

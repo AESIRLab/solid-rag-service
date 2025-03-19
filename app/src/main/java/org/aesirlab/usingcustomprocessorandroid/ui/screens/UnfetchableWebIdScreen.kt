@@ -27,11 +27,13 @@ import kotlinx.coroutines.launch
 import net.openid.appauth.CodeVerifierUtil
 import org.aesirlab.usingcustomprocessorandroid.R
 import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
+import org.aesirlab.usingcustomprocessorandroid.shared.getUnsafeOkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
-import org.skCompiler.generatedAuth.fetchAuth
-import org.skCompiler.generatedAuth.fetchConfig
-import org.skCompiler.generatedAuth.fetchRegistration
+import org.skCompiler.generatedAuth.buildAuthorizationUrl
+import org.skCompiler.generatedAuth.buildConfigRequest
+import org.skCompiler.generatedAuth.buildRegistrationJSONBody
+import org.skCompiler.generatedAuth.buildRegistrationRequest
 import org.skCompiler.generatedModel.AuthTokenStore
 
 @Composable
@@ -62,11 +64,12 @@ fun UnfetchableWebIdScreen(
         )
         val context = LocalContext.current
         StartButton(text = "Fetch OIDC Config") {
-
+            val client = getUnsafeOkHttpClient()
             val redirectUris = listOf(REDIRECT_URI)
             CoroutineScope(Dispatchers.IO).launch {
 
-                val configResponse = fetchConfig(solidProvider)
+                val configRequest = buildConfigRequest(solidProvider)
+                val configResponse = client.newCall(configRequest).execute()
 
                 val responseBody = configResponse.body!!.string()
                 val configJSON = JSONObject(responseBody)
@@ -77,7 +80,9 @@ fun UnfetchableWebIdScreen(
 
                 tokenStore.setTokenUri(tokenEndpoint)
 
-                val registrationResponse = fetchRegistration(appTitle, registrationEndpoint, redirectUris)
+                val jsonBody = buildRegistrationJSONBody(appTitle, redirectUris)
+                val registrationRequest = buildRegistrationRequest(registrationEndpoint, jsonBody)
+                val registrationResponse = client.newCall(registrationRequest).execute()
                 val registrationString = registrationResponse.body!!.string()
 
                 val registrationJSON = JSONObject(registrationString)
@@ -99,8 +104,8 @@ fun UnfetchableWebIdScreen(
 
                 tokenStore.setCodeVerifier(codeVerifier)
 
-                val httpUrl = fetchAuth(authUrl, clientId, clientSecret, codeVerifierChallenge, redirectUris[0])
-                val sendUri = Uri.parse(httpUrl.toString())
+                val authorizationUrl = buildAuthorizationUrl(authUrl, clientId, codeVerifierChallenge, redirectUris[0], clientSecret)
+                val sendUri = Uri.parse(authorizationUrl.toString())
                 context.startActivity(Intent(Intent.ACTION_VIEW, sendUri))
             }
         }

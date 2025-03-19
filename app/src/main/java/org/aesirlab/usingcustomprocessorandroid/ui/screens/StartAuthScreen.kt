@@ -30,13 +30,15 @@ import net.openid.appauth.CodeVerifierUtil
 import okhttp3.Response
 import org.aesirlab.usingcustomprocessorandroid.R
 import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
+import org.aesirlab.usingcustomprocessorandroid.shared.getUnsafeOkHttpClient
 import org.aesirlab.usingcustomprocessorandroid.shared.okHttpRequest
 import org.json.JSONException
 import org.json.JSONObject
-import org.skCompiler.generatedAuth.fetchAuth
-import org.skCompiler.generatedAuth.fetchConfig
-import org.skCompiler.generatedAuth.fetchRegistration
-import org.skCompiler.generatedAuth.setOidcProvider
+import org.skCompiler.generatedAuth.buildAuthorizationUrl
+import org.skCompiler.generatedAuth.buildConfigRequest
+import org.skCompiler.generatedAuth.buildRegistrationJSONBody
+import org.skCompiler.generatedAuth.buildRegistrationRequest
+import org.skCompiler.generatedAuth.getOidcProviderFromWebIdDoc
 import org.skCompiler.generatedModel.AuthTokenStore
 
 @Composable
@@ -79,6 +81,7 @@ fun StartAuthScreen(
             val redirectUris = listOf(REDIRECT_URI)
             CoroutineScope(Dispatchers.IO).launch {
 
+                val client = getUnsafeOkHttpClient()
                 tokenStore.setWebId(webId)
                 tokenStore.setRedirectUri(redirectUris[0])
                 val response: Response?
@@ -94,10 +97,11 @@ fun StartAuthScreen(
                     return@launch
                 }
                 val data = response.body!!.string()
-                val oidcProvider = setOidcProvider(data)
+                val oidcProvider = getOidcProviderFromWebIdDoc(data)
                 tokenStore.setOidcProvider(oidcProvider)
 
-                val configResponse = fetchConfig(oidcProvider)
+                val configRequest = buildConfigRequest(oidcProvider)
+                val configResponse = client.newCall(configRequest).execute()
                 // needs 4xx error checking
                 val responseBody = configResponse.body!!.string()
                 val configJSON = JSONObject(responseBody)
@@ -108,7 +112,9 @@ fun StartAuthScreen(
 
                 tokenStore.setTokenUri(tokenEndpoint)
 
-                val registrationResponse = fetchRegistration(appTitle, registrationEndpoint, redirectUris)
+                val registrationBody = buildRegistrationJSONBody(appTitle, redirectUris)
+                val registrationRequest = buildRegistrationRequest(registrationEndpoint, registrationBody)
+                val registrationResponse = client.newCall(registrationRequest).execute()
                 val registrationString = registrationResponse.body!!.string()
 
                 val registrationJSON = JSONObject(registrationString)
@@ -128,8 +134,9 @@ fun StartAuthScreen(
 
                 tokenStore.setCodeVerifier(codeVerifier)
 
-                val httpUrl = fetchAuth(authUrl, clientId, clientSecret, codeVerifierChallenge, redirectUris[0])
-                val sendUri = Uri.parse(httpUrl.toString())
+
+                val authorizationUrl = buildAuthorizationUrl(authUrl, clientId, codeVerifierChallenge, redirectUris[0], clientSecret)
+                val sendUri = Uri.parse(authorizationUrl.toString())
                 context.startActivity(Intent(Intent.ACTION_VIEW, sendUri))
             }
         }

@@ -74,7 +74,7 @@ android {
 }
 
 
-val version = "0.1.66"
+val version = "0.1.71"
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material3.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

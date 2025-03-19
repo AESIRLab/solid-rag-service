@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
-import org.skCompiler.generatedAuth.DPoPAuth
+import org.skCompiler.generatedAuth.generateAuthString
 import org.skCompiler.generatedModel.AuthTokenStore
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
@@ -19,7 +19,6 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 suspend fun okHttpRequest(url: String): Response = withContext(Dispatchers.IO) {
-//    val client = OkHttpClient()
     val client = getUnsafeOkHttpClient()
     val request = Request.Builder().url(url).build()
     val response = client.newCall(request).execute()
@@ -38,9 +37,7 @@ suspend fun preliminaryAuth(tokenStore: AuthTokenStore, code: String?)  {
         clientSecret = rClientSecret
     }
 
-    val authForm = DPoPAuth(tokenUri = tokenUrl)
-    val authString = authForm.generateAuthString("POST")
-//    tokenStore.setSigningJWK(authForm.key!!.toJSONObject().toString())
+    val authString = generateAuthString("POST", tokenUrl)
 
     val response = tokenRequest(
         clientId,
@@ -58,22 +55,19 @@ suspend fun preliminaryAuth(tokenStore: AuthTokenStore, code: String?)  {
     val idToken: String
     try {
         idToken = json.getString("id_token")
-
         tokenStore.setIdToken(idToken)
 
         try {
             val jwtObject = SignedJWT.parse(idToken)
             val body = jwtObject.payload
-//            Log.d(TAG, body.toString())
             val jsonBody = JSONObject(body.toJSONObject())
             val webId = jsonBody.getString("webid")
-//            Log.d(TAG, webId)
             tokenStore.setWebId(webId)
         } catch (e: Exception) {
-            e.message?.let { Log.d("error", it) }
+            e.message?.let { Log.e("error", it) }
         }
     } catch (e: Exception) {
-        e.message?.let { Log.d("error", it) }
+        e.message?.let { Log.e("error", it) }
     }
 
     val refreshToken: String

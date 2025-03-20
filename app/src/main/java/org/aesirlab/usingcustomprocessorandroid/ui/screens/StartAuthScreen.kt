@@ -27,16 +27,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.openid.appauth.CodeVerifierUtil
+import okhttp3.Request
 import okhttp3.Response
 import org.aesirlab.mylibrary.buildAuthorizationUrl
 import org.aesirlab.mylibrary.buildConfigRequest
 import org.aesirlab.mylibrary.buildRegistrationJSONBody
 import org.aesirlab.mylibrary.buildRegistrationRequest
 import org.aesirlab.mylibrary.getOidcProviderFromWebIdDoc
+import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
 import org.aesirlab.usingcustomprocessorandroid.R
 import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
-import org.aesirlab.usingcustomprocessorandroid.shared.getUnsafeOkHttpClient
-import org.aesirlab.usingcustomprocessorandroid.shared.okHttpRequest
 import org.json.JSONException
 import org.json.JSONObject
 import org.skCompiler.generatedModel.AuthTokenStore
@@ -81,12 +81,13 @@ fun StartAuthScreen(
             val redirectUris = listOf(REDIRECT_URI)
             CoroutineScope(Dispatchers.IO).launch {
 
-                val client = getUnsafeOkHttpClient()
+                val client = createUnsafeOkHttpClient()
                 tokenStore.setWebId(webId)
                 tokenStore.setRedirectUri(redirectUris[0])
                 val response: Response?
                 try {
-                    response = okHttpRequest(webId)
+                    val request = Request.Builder().url(webId).get().build()
+                    response = client.newCall(request).execute()
                 } catch (e: Exception) {
                     onInvalidInput(e.message)
                     return@launch

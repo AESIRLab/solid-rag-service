@@ -29,9 +29,9 @@ import org.aesirlab.mylibrary.buildAuthorizationUrl
 import org.aesirlab.mylibrary.buildConfigRequest
 import org.aesirlab.mylibrary.buildRegistrationJSONBody
 import org.aesirlab.mylibrary.buildRegistrationRequest
+import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
 import org.aesirlab.usingcustomprocessorandroid.R
 import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
-import org.aesirlab.usingcustomprocessorandroid.shared.getUnsafeOkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
 import org.skCompiler.generatedModel.AuthTokenStore
@@ -64,7 +64,7 @@ fun UnfetchableWebIdScreen(
         )
         val context = LocalContext.current
         StartButton(text = "Fetch OIDC Config") {
-            val client = getUnsafeOkHttpClient()
+            val client = createUnsafeOkHttpClient()
             val redirectUris = listOf(REDIRECT_URI)
             CoroutineScope(Dispatchers.IO).launch {
 

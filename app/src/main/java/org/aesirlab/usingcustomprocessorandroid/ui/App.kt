@@ -25,7 +25,6 @@ import org.aesirlab.usingcustomprocessorandroid.ui.screens.MainScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.StartAuthScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.UnfetchableWebIdScreen
 import org.skCompiler.generatedModel.AuthTokenStore
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 enum class Screens {
     MainScreen,

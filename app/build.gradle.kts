@@ -74,7 +74,7 @@ android {
 }
 
 
-val version = "0.1.71"
+val version = "0.0.2"
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -109,7 +109,7 @@ dependencies {
 
     implementation("org.aesirlab:sksolidannotations:$version")
     ksp("org.aesirlab:skannotationscompiler:$version")
-    ksp("org.aesirlab:skauthannotationscompiler:$version")
+    implementation("org.aesirlab:authlib:$version")
 
     // do not turn these to lib toml
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

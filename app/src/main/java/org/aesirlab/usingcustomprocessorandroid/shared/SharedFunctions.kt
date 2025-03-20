@@ -10,8 +10,8 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.aesirlab.mylibrary.generateAuthString
 import org.json.JSONObject
-import org.skCompiler.generatedAuth.generateAuthString
 import org.skCompiler.generatedModel.AuthTokenStore
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext

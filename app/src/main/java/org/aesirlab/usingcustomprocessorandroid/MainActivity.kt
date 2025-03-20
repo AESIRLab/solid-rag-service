@@ -12,7 +12,7 @@ import org.aesirlab.usingcustomprocessorandroid.ui.App
 import org.aesirlab.usingcustomprocessorandroid.ui.theme.UsingCustomProcessorAndroidTheme
 const val REDIRECT_URI = "org.aesirlab.customprocessor://app/callback"
 
-@SolidAuthAnnotation
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

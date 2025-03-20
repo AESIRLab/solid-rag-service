@@ -28,17 +28,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.openid.appauth.CodeVerifierUtil
 import okhttp3.Response
+import org.aesirlab.mylibrary.buildAuthorizationUrl
+import org.aesirlab.mylibrary.buildConfigRequest
+import org.aesirlab.mylibrary.buildRegistrationJSONBody
+import org.aesirlab.mylibrary.buildRegistrationRequest
+import org.aesirlab.mylibrary.getOidcProviderFromWebIdDoc
 import org.aesirlab.usingcustomprocessorandroid.R
 import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
 import org.aesirlab.usingcustomprocessorandroid.shared.getUnsafeOkHttpClient
 import org.aesirlab.usingcustomprocessorandroid.shared.okHttpRequest
 import org.json.JSONException
 import org.json.JSONObject
-import org.skCompiler.generatedAuth.buildAuthorizationUrl
-import org.skCompiler.generatedAuth.buildConfigRequest
-import org.skCompiler.generatedAuth.buildRegistrationJSONBody
-import org.skCompiler.generatedAuth.buildRegistrationRequest
-import org.skCompiler.generatedAuth.getOidcProviderFromWebIdDoc
 import org.skCompiler.generatedModel.AuthTokenStore
 
 @Composable

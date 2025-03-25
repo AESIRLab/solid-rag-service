@@ -48,6 +48,7 @@ fun StartButton(text: String, onClick: () -> Unit) {
     }
 }
 
+private const val TAG = "StartAuthScreen"
 @Composable
 fun StartAuthScreen(
     tokenStore: AuthTokenStore,
@@ -84,6 +85,7 @@ fun StartAuthScreen(
                 val client = createUnsafeOkHttpClient()
                 tokenStore.setWebId(webId)
                 tokenStore.setRedirectUri(redirectUris[0])
+                Log.d(TAG, webId)
                 val response: Response?
                 try {
                     val request = Request.Builder().url(webId).get().build()

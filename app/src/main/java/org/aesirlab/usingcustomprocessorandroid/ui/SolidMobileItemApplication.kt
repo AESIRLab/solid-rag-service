@@ -1,6 +1,9 @@
 package org.aesirlab.usingcustomprocessorandroid.ui
 
 import android.app.Application
+import android.content.ClipData.Item
+import org.skCompiler.generatedModel.ItemDao
+import org.skCompiler.generatedModel.ItemDaoImpl
 import org.skCompiler.generatedModel.ItemDatabase
 import org.skCompiler.generatedModel.ItemRepository
 
@@ -11,10 +14,9 @@ class SolidMobileItemApplication: Application() {
 
     companion object {
         lateinit var appInstance: SolidMobileItemApplication
-        const val FILE_PATH = "SolidItemApplication"
         const val BASE_URL = "http://soliditemapp.aesirlab.io"
     }
 
-    private val database by lazy { ItemDatabase.getDatabase(appInstance, BASE_URL, FILE_PATH) }
+    val database by lazy { ItemDatabase.getDatabase(appInstance, BASE_URL) }
     val repository by lazy { ItemRepository(database.ItemDao())}
 }

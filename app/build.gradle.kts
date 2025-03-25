@@ -74,7 +74,7 @@ android {
 }
 
 
-val version = "0.0.3"
+val version = "0.0.13"
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -93,16 +93,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    // anything below here is needed for the library
-//    implementation(files("libs\\androjena_0.5.jar"))
-//    implementation(files("libs\\androjena_0.5_sources.jar"))
-//    implementation(files("libs\\arqoid_0.5.jar"))
-//    implementation(files("libs\\icu4j-3.4.5.jar"))
-//    implementation(files("libs\\iri-0.8.jar"))
-//    implementation(files("libs\\lucenoid_3.0.2.jar"))
-//    implementation(files("libs\\slf4j-android-1.6.1-RC1.jar"))
-//    implementation(files("libs\\tdboid_0.4.jar"))
 
     ksp("com.squareup:kotlinpoet:1.14.0")
     ksp("com.squareup:kotlinpoet-ksp:1.12.0")

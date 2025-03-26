@@ -43,7 +43,6 @@ public class ItemDaoImpl(
     this.saveFilePath = saveFilePath
     val model: Model = if (webId != null) {
       val file = File(baseUri, saveFilePath)
-
       if (file.exists()) {
         val inStream = file.inputStream()
         ModelFactory.createDefaultModel().read(inStream, null)

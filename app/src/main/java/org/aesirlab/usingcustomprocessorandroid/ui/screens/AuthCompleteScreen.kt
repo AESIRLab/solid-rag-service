@@ -13,7 +13,7 @@ import org.aesirlab.mylibrary.sharedfunctions.buildTokenRequest
 import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
 import org.aesirlab.mylibrary.sharedfunctions.parseTokenResponseBody
 import org.aesirlab.usingcustomprocessorandroid.ui.SolidMobileItemApplication
-import org.skCompiler.generatedModel.AuthTokenStore
+import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
 
 
 private const val TAG = "AuthCompleteScreen"
@@ -26,8 +26,6 @@ fun AuthCompleteScreen(
     val activity = (context as Activity).intent
     val intentData = activity.data
     val code = intentData?.getQueryParameter("code")
-    val db = (context.application as SolidMobileItemApplication).database
-//    val repo = (context.application as SolidMobileItemApplication).setRe
 
     val informationHashMap = runBlocking {
         val hm = HashMap<String ,String>()
@@ -61,7 +59,7 @@ fun AuthCompleteScreen(
         tokenStore.apply {
             tokensHashMap["access_token"]?.let { setAccessToken(it) }
             tokensHashMap["id_token"]?.let { setIdToken(it) }
-            tokensHashMap["web_id"]?.let { setWebId(it); db.setWebId(webId = it) }
+            tokensHashMap["web_id"]?.let { setWebId(it) }
             tokensHashMap["refresh_token"]?.let { setRefreshToken(it) }
         }
     }

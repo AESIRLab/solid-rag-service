@@ -32,9 +32,9 @@ import org.aesirlab.mylibrary.buildRegistrationRequest
 import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
 import org.aesirlab.usingcustomprocessorandroid.R
 import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
+import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
 import org.json.JSONException
 import org.json.JSONObject
-import org.skCompiler.generatedModel.AuthTokenStore
 
 @Composable
 fun UnfetchableWebIdScreen(

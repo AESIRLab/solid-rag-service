@@ -10,44 +10,66 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.aesirlab.model.Item
-import org.skCompiler.generatedModel.ItemRepository
+import org.aesirlab.model.ItemRepository
+
 
 private const val TAG = "ItemViewModel"
 class ItemViewModel(private val repository: ItemRepository): ViewModel() {
 
-    private val _allItems: MutableStateFlow<List<Item>> = MutableStateFlow(listOf())
+    private var _allItems: MutableStateFlow<List<Item>> = MutableStateFlow(listOf())
     val allItems: StateFlow<List<Item>> get() = _allItems
 
     init {
-        _allItems.value = repository.allItems()
+        this.viewModelScope.launch {
+            repository.allItemsAsFlow().collect { list ->
+                _allItems.value = list
+            }
+        }
+    }
+
+    suspend fun updateWebId(webId: String) {
+        viewModelScope.launch {
+            repository.insertWebId(webId)
+            repository.allItemsAsFlow().collect { list ->
+                _allItems.value = list
+            }
+        }
     }
 
     suspend fun insert(item: Item) {
         viewModelScope.launch {
             repository.insert(item)
             // not sure if this is the right way to do it...
-            _allItems.value = repository.allItems()
+            repository.allItemsAsFlow().collect { list ->
+                _allItems.value = list
+            }
         }
     }
 
     suspend fun insertMany(list: List<Item>) {
         viewModelScope.launch {
             repository.insertMany(list)
-            _allItems.value = repository.allItems()
+            repository.allItemsAsFlow().collect { list ->
+                _allItems.value = list
+            }
         }
     }
 
     suspend fun delete(item: Item) {
         viewModelScope.launch {
             repository.deleteByUri(item.id)
-            _allItems.value = repository.allItems()
+            repository.allItemsAsFlow().collect { list ->
+                _allItems.value = list
+            }
         }
     }
 
     suspend fun update(item: Item) {
         viewModelScope.launch {
             repository.update(item)
-            _allItems.value = repository.allItems()
+            repository.allItemsAsFlow().collect { list ->
+                _allItems.value = list
+            }
         }
     }
 
@@ -58,17 +80,6 @@ class ItemViewModel(private val repository: ItemRepository): ViewModel() {
                 val itemRepository = application.repository
                 ItemViewModel(itemRepository)
             }
-        }
-    }
-}
-
-class ItemViewModelFactory(private val repository: ItemRepository): ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return if (modelClass.isAssignableFrom(ItemViewModel::class.java)) {
-            ItemViewModel(repository) as T
-        } else {
-            throw IllegalArgumentException("ViewModel cannot be created due to class instantiation failure")
         }
     }
 }

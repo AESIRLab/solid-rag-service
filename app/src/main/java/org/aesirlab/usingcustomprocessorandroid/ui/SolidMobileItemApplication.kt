@@ -1,11 +1,8 @@
 package org.aesirlab.usingcustomprocessorandroid.ui
 
 import android.app.Application
-import android.content.ClipData.Item
-import org.skCompiler.generatedModel.ItemDao
-import org.skCompiler.generatedModel.ItemDaoImpl
-import org.skCompiler.generatedModel.ItemDatabase
-import org.skCompiler.generatedModel.ItemRepository
+import org.aesirlab.model.ItemDatabase
+import org.aesirlab.model.ItemRepository
 
 class SolidMobileItemApplication: Application() {
     init {
@@ -18,5 +15,5 @@ class SolidMobileItemApplication: Application() {
     }
 
     val database by lazy { ItemDatabase.getDatabase(appInstance, BASE_URL) }
-    val repository by lazy { ItemRepository(database.ItemDao())}
+    val repository by lazy { ItemRepository(database.ItemDao()) }
 }

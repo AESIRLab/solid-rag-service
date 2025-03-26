@@ -28,6 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -36,7 +39,7 @@ import org.aesirlab.model.Item
 import org.aesirlab.usingcustomprocessorandroid.R
 import org.aesirlab.usingcustomprocessorandroid.ui.ItemViewModel
 import org.aesirlab.usingcustomprocessorandroid.ui.SolidMobileItemApplication
-import org.skCompiler.generatedModel.AuthTokenStore
+import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
 
 
 @Composable
@@ -46,16 +49,17 @@ fun MainScreen(
     val appCtx = LocalContext.current.applicationContext
     val coroutineScope = rememberCoroutineScope()
     val store = AuthTokenStore(appCtx)
-    val db = (appCtx as SolidMobileItemApplication).database
-    val currentWebId = remember {
-        runBlocking { store.getWebId().first() }
-    }
-    runBlocking {
-        db.setWebId(currentWebId)
+    val viewModel: ItemViewModel = viewModel(
+        factory = ItemViewModel.Factory
+    )
+
+    LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
+        runBlocking {
+            val webId = store.getWebId().first()
+            viewModel.updateWebId(webId)
+        }
     }
 
-    val repository = (LocalContext.current.applicationContext as SolidMobileItemApplication).repository
-    val viewModel = ItemViewModel(repository)
 
     val items by viewModel.allItems.collectAsState()
 

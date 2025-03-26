@@ -19,12 +19,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
+import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.AuthCompleteScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.MainScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.StartAuthScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.UnfetchableWebIdScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.WebsocketConnectScreen
-import org.skCompiler.generatedModel.AuthTokenStore
 
 enum class Screens {
     MainScreen,
@@ -49,7 +49,6 @@ fun App() {
             startDestination = Screens.StartAuthScreen.name,
             modifier = Modifier.padding(innerPadding)
         ) {
-
             composable(route = Screens.StartAuthScreen.name) {
                 val webId = runBlocking {
                     store.getWebId().first()

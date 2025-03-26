@@ -39,7 +39,7 @@ import org.aesirlab.usingcustomprocessorandroid.R
 import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
 import org.json.JSONException
 import org.json.JSONObject
-import org.skCompiler.generatedModel.AuthTokenStore
+import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
 
 @Composable
 fun StartButton(text: String, onClick: () -> Unit) {

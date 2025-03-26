@@ -140,7 +140,7 @@ public class ItemDaoImpl(
     this.webId = webId
     this.saveFilePath = webId.replace("https://", "").replace("http://",
         "").split("/").drop(1).joinToString(separator="_").replace("#", "")
-    val file = File(baseUri, saveFilePath)
+    val file = File(baseDir, saveFilePath)
     this.model = if (file.exists()) {
       val inStream = file.inputStream()
       ModelFactory.createDefaultModel().read(inStream, null)
@@ -153,5 +153,6 @@ public class ItemDaoImpl(
       model.setNsPrefix("ti", Utilities.NS_Item)
       model
     }
+    modelLiveData.value = getAllItems()
   }
 }

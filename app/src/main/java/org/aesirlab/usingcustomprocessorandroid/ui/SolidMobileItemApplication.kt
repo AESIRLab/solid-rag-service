@@ -14,6 +14,6 @@ class SolidMobileItemApplication: Application() {
         const val BASE_URL = "http://soliditemapp.aesirlab.io"
     }
 
-    val database by lazy { ItemDatabase.getDatabase(appInstance, BASE_URL) }
+    private val database by lazy { ItemDatabase.getDatabase(appInstance, BASE_URL) }
     val repository by lazy { ItemRepository(database.ItemDao()) }
 }

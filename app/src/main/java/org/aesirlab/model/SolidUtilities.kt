@@ -1,4 +1,4 @@
-package org.aesirlab.usingcustomprocessorandroid.model
+package org.aesirlab.model
 
 import android.content.Context
 import com.hp.hpl.jena.query.QueryExecutionFactory
@@ -25,8 +25,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.aesirlab.model.Item
-import org.aesirlab.usingcustomprocessorandroid.model.Utilities.Companion.ABSOLUTE_URI
+import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
+import org.aesirlab.model.Utilities.Companion.ABSOLUTE_URI
 import org.json.JSONObject
 
 public class SolidUtilities(

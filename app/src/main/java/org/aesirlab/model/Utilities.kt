@@ -1,10 +1,9 @@
-package org.aesirlab.usingcustomprocessorandroid.model
+package org.aesirlab.model
 
 import com.hp.hpl.jena.rdf.model.ModelFactory
 import com.hp.hpl.jena.rdf.model.Resource
 import com.hp.hpl.jena.rdf.model.ResourceFactory
 import kotlin.String
-import org.aesirlab.model.Item
 
 public class Utilities {
   public companion object {

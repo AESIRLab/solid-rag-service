@@ -2,6 +2,7 @@ package org.aesirlab.usingcustomprocessorandroid.ui
 
 import android.app.Application
 import org.aesirlab.model.ItemDatabase
+import org.aesirlab.model.ItemRemoteDataSource
 import org.aesirlab.model.ItemRepository
 
 class SolidMobileItemApplication: Application() {
@@ -14,6 +15,7 @@ class SolidMobileItemApplication: Application() {
         const val BASE_URL = "http://soliditemapp.aesirlab.io"
     }
 
+
     private val database by lazy { ItemDatabase.getDatabase(appInstance, BASE_URL) }
-    val repository by lazy { ItemRepository(database.ItemDao()) }
+    val repository by lazy { ItemRepository(database.ItemDao(), ) }
 }

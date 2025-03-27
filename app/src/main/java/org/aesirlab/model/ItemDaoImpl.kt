@@ -6,8 +6,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import org.aesirlab.usingcustomprocessorandroid.model.Utilities
-import org.aesirlab.usingcustomprocessorandroid.model.Utilities.Companion.resourceToItem
+import org.aesirlab.model.Utilities.Companion.resourceToItem
 import java.io.File
 import java.util.Random
 

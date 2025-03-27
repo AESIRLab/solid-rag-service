@@ -6,7 +6,7 @@ import kotlin.collections.List
 import kotlinx.coroutines.flow.Flow
 
 public class ItemRepository(
-  private val itemDao: ItemDao,
+  private val itemDao: ItemDao
 ) {
   public fun allItemsAsFlow(): Flow<List<Item>> = itemDao.getAllItemsAsFlow()
 

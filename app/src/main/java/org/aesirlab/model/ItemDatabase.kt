@@ -2,9 +2,6 @@ package org.aesirlab.model
 
 import android.`annotation`.SuppressLint
 import android.content.Context
-import com.hp.hpl.jena.rdf.model.Model
-import com.hp.hpl.jena.rdf.model.ModelFactory
-import org.aesirlab.usingcustomprocessorandroid.model.Utilities
 import java.io.File
 import kotlin.String
 import kotlin.jvm.Volatile

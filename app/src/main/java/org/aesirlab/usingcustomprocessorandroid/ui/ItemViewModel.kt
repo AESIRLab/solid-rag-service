@@ -6,24 +6,48 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.aesirlab.model.Item
+import org.aesirlab.model.ItemRemoteDataSource
 import org.aesirlab.model.ItemRepository
 
 
 private const val TAG = "ItemViewModel"
-class ItemViewModel(private val repository: ItemRepository): ViewModel() {
+class ItemViewModel(
+    private val repository: ItemRepository,
+    private val itemRemoteDataSource: ItemRemoteDataSource
+): ViewModel() {
 
     private var _allItems: MutableStateFlow<List<Item>> = MutableStateFlow(listOf())
     val allItems: StateFlow<List<Item>> get() = _allItems
 
     init {
         this.viewModelScope.launch {
-            repository.allItemsAsFlow().collect { list ->
-                _allItems.value = list
+            val newList = mutableListOf<Item>()
+            if (itemRemoteDataSource.remoteAccessible()) {
+                newList += itemRemoteDataSource.fetchRemoteItemList()
             }
+            repository.allItemsAsFlow().collect { list ->
+                newList += list
+            }
+            _allItems.value = newList.distinct()
+        }
+    }
+
+    suspend fun setRemoteRepositoryData(
+        accessToken: String,
+        signingJwk: String,
+        webId: String,
+        expirationTime: Long,
+    ) {
+        viewModelScope.launch {
+            itemRemoteDataSource.signingJwk = signingJwk
+            itemRemoteDataSource.webId = webId
+            itemRemoteDataSource.expirationTime = expirationTime
+            itemRemoteDataSource.accessToken = accessToken
         }
     }
 
@@ -78,7 +102,8 @@ class ItemViewModel(private val repository: ItemRepository): ViewModel() {
             initializer {
                 val application = (this[APPLICATION_KEY] as SolidMobileItemApplication)
                 val itemRepository = application.repository
-                ItemViewModel(itemRepository)
+                val itemRemoteDataSource = ItemRemoteDataSource(ioDispatcher = Dispatchers.IO)
+                ItemViewModel(itemRepository, itemRemoteDataSource)
             }
         }
     }

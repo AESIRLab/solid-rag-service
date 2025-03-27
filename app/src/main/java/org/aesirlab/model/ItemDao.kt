@@ -18,4 +18,6 @@ public interface ItemDao {
   public fun getItemByIdAsFlow(id: String): Flow<Item>
 
   public fun updateWebId(webId: String)
+
+  fun resetModel()
 }

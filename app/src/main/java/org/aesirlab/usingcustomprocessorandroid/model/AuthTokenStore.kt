@@ -75,8 +75,8 @@ public class AuthTokenStore(
 
   public fun getRedirectUri(): Flow<String> = dataStore.data.map { it[REDIRECT_URI] ?: "" }
 
-  public suspend fun setSigner(Signer: String) {
-    dataStore.edit { it[SIGNER] = Signer }
+  public suspend fun setSigner(signer: String) {
+    dataStore.edit { it[SIGNER] = signer }
   }
 
   public fun getSigner(): Flow<String> = dataStore.data.map { it[SIGNER] ?: "" }

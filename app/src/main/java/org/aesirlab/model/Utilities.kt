@@ -7,7 +7,7 @@ import kotlin.String
 
 public class Utilities {
   public companion object {
-    public const val ABSOLUTE_URI: String = "itemThing"
+    public const val ABSOLUTE_URI: String = "TEST_LISTOF_itemThing"
 
     public const val NS_ACP: String = "http://www.w3.org/ns/solid/acp#"
 

@@ -5,15 +5,18 @@ import android.app.Activity
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.nimbusds.jose.jwk.JWK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.aesirlab.mylibrary.generateDPoPKey
 import org.aesirlab.mylibrary.sharedfunctions.buildTokenRequest
 import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
 import org.aesirlab.mylibrary.sharedfunctions.parseTokenResponseBody
 import org.aesirlab.usingcustomprocessorandroid.ui.SolidMobileItemApplication
 import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
+import kotlin.math.sign
 
 
 private const val TAG = "AuthCompleteScreen"
@@ -36,11 +39,14 @@ fun AuthCompleteScreen(
         hm["redirectUri"] = tokenStore.getRedirectUri().first()
         hm
     }
+
+    val ecKey = generateDPoPKey()
     val tokenRequest = buildTokenRequest(
         informationHashMap["clientId"]!!,
         informationHashMap["tokenUri"]!!,
         informationHashMap["codeVerifier"]!!,
         informationHashMap["redirectUri"]!!,
+        signingJwk =  ecKey,
         informationHashMap["clientSecret"]!!,
         code
     )
@@ -57,6 +63,7 @@ fun AuthCompleteScreen(
     }
     runBlocking {
         tokenStore.apply {
+            setSigner(ecKey.toJSONObject().toString())
             tokensHashMap["access_token"]?.let { setAccessToken(it) }
             tokensHashMap["id_token"]?.let { setIdToken(it) }
             tokensHashMap["web_id"]?.let { setWebId(it) }

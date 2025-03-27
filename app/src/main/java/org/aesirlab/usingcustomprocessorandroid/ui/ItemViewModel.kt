@@ -1,12 +1,15 @@
 package org.aesirlab.usingcustomprocessorandroid.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,16 +27,27 @@ class ItemViewModel(
     private var _allItems: MutableStateFlow<List<Item>> = MutableStateFlow(listOf())
     val allItems: StateFlow<List<Item>> get() = _allItems
 
+
+    public suspend fun refreshAsync() {
+        val newList = mutableListOf<Item>()
+        Log.d(TAG, itemRemoteDataSource.remoteAccessible().toString())
+        if (itemRemoteDataSource.remoteAccessible()) {
+            newList += itemRemoteDataSource.fetchRemoteItemList()
+            Log.d(TAG, "len of newList: ${newList.size}")
+            repository.resetModel()
+            repository.insertMany(newList)
+        }
+
+        repository.allItemsAsFlow().collect { list ->
+            newList += list
+            _allItems.value = newList.distinct()
+        }
+
+    }
+
     init {
         this.viewModelScope.launch {
-            val newList = mutableListOf<Item>()
-            if (itemRemoteDataSource.remoteAccessible()) {
-                newList += itemRemoteDataSource.fetchRemoteItemList()
-            }
-            repository.allItemsAsFlow().collect { list ->
-                newList += list
-            }
-            _allItems.value = newList.distinct()
+            refreshAsync()
         }
     }
 
@@ -41,7 +55,7 @@ class ItemViewModel(
         return itemRemoteDataSource.remoteAccessible()
     }
 
-    fun setRemoteRepositoryData(
+    suspend fun setRemoteRepositoryData(
         accessToken: String,
         signingJwk: String,
         webId: String,
@@ -51,6 +65,7 @@ class ItemViewModel(
         itemRemoteDataSource.webId = webId
         itemRemoteDataSource.expirationTime = expirationTime
         itemRemoteDataSource.accessToken = accessToken
+        refreshAsync()
     }
 
     suspend fun updateWebId(webId: String) {
@@ -58,8 +73,8 @@ class ItemViewModel(
             repository.insertWebId(webId)
             repository.allItemsAsFlow().collect { list ->
                 _allItems.value = list
+                itemRemoteDataSource.setLatestList(list)
             }
-            itemRemoteDataSource.setLatestList(_allItems.value)
         }
     }
 
@@ -69,9 +84,9 @@ class ItemViewModel(
             // not sure if this is the right way to do it...
             repository.allItemsAsFlow().collect { list ->
                 _allItems.value = list
+                itemRemoteDataSource.setLatestList(list)
+//                itemRemoteDataSource.updateRemoteItemList()
             }
-            itemRemoteDataSource.setLatestList(_allItems.value)
-            itemRemoteDataSource.updateRemoteItemList()
         }
     }
 
@@ -89,9 +104,9 @@ class ItemViewModel(
             repository.deleteByUri(item.id)
             repository.allItemsAsFlow().collect { list ->
                 _allItems.value = list
+                itemRemoteDataSource.setLatestList(_allItems.value)
             }
-            itemRemoteDataSource.setLatestList(_allItems.value)
-            itemRemoteDataSource.updateRemoteItemList()
+//            itemRemoteDataSource.updateRemoteItemList()
         }
     }
 
@@ -108,7 +123,7 @@ class ItemViewModel(
                 _allItems.value = list
             }
             itemRemoteDataSource.setLatestList(_allItems.value)
-            itemRemoteDataSource.updateRemoteItemList()
+//            itemRemoteDataSource.updateRemoteItemList()
         }
     }
 
@@ -117,7 +132,7 @@ class ItemViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as SolidMobileItemApplication)
                 val itemRepository = application.repository
-                val itemRemoteDataSource = ItemRemoteDataSource(ioDispatcher = Dispatchers.IO)
+                val itemRemoteDataSource = ItemRemoteDataSource(externalScope = CoroutineScope(SupervisorJob() + Dispatchers.Default))
                 ItemViewModel(itemRepository, itemRemoteDataSource)
             }
         }

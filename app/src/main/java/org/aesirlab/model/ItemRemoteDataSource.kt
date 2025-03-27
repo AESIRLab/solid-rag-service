@@ -12,8 +12,11 @@ import com.nimbusds.jose.jwk.JWK
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -21,16 +24,18 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.aesirlab.model.Utilities.Companion.ABSOLUTE_URI
 import org.aesirlab.model.Utilities.Companion.resourceToItem
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.util.Calendar
 import java.util.UUID
-import kotlin.math.exp
 
+private const val TAG = "ItemRemoteDataSource"
 private fun generateCustomToken(signingJwk: String, method: String, uri: String): String {
     if (signingJwk == "") {
         throw Error("no signing jwk found")
     }
-    val parsedKey = ECKey.parse(JWK.parse(signingJwk).toJSONObject())
+    val jsonFromStringJWK = JSONObject(signingJwk)
+    val parsedKey = ECKey.parse(jsonFromStringJWK.toString(4))
     val ecPublicJWK = parsedKey.toPublicJWK()
     val signer = ECDSASigner(parsedKey)
     val body = JWTClaimsSet.Builder().claim("htu", uri).claim("htm",
@@ -60,8 +65,9 @@ class ItemRemoteDataSource(
     var accessToken: String? = null,
     var expirationTime: Long? = null,
     var signingJwk: String? = null,
-    private val ioDispatcher: CoroutineDispatcher
+    private val externalScope: CoroutineScope
 ) {
+    private val latestListMutex = Mutex()
     private var latestList: List<Item> = emptyList()
 
     fun setLatestList(items: List<Item>) {
@@ -71,7 +77,7 @@ class ItemRemoteDataSource(
     suspend fun updateRemoteItemList() {
         if (webId != null && accessToken != null && accessTokenIsValid()) {
             val client = OkHttpClient()
-            withContext(ioDispatcher) {
+            externalScope.launch {
                 val storageUri = getStorage(webId!!)
                 val model: Model = ModelFactory.createDefaultModel()
                 val resourceUri = "${storageUri}$ABSOLUTE_URI"
@@ -95,6 +101,8 @@ class ItemRemoteDataSource(
                 val putResponse = client.newCall(putRequest).execute()
                 if (putResponse.code !in 200..299) {
                     throw Error("failed to update remote repository because: ${putResponse.code} ${putResponse.message}")
+                } else {
+                    Log.d(TAG, "successfully updated report repository at $resourceUri with code ${putResponse.code}")
                 }
             }
         }
@@ -105,16 +113,17 @@ class ItemRemoteDataSource(
     }
 
     fun remoteAccessible(): Boolean {
+        expirationTime?.let { Log.d(TAG, "${System.currentTimeMillis()} and expiring time ${expirationTime!!}") }
         return (accessToken != null &&
                 webId != null &&
                 expirationTime != null &&
-                expirationTime!! < System.currentTimeMillis() &&
+                expirationTime!! > System.currentTimeMillis() &&
                 signingJwk != null)
     }
 
     suspend fun fetchRemoteItemList(): List<Item> {
-        if (webId != null && accessToken != null && accessTokenIsValid()) {
-            withContext(ioDispatcher) {
+        return if (webId != null && accessToken != null && accessTokenIsValid()) {
+            externalScope.async {
                 val storageUri = getStorage(webId!!)
                 val getRequest = generateGetRequest(signingJwk!!, "${storageUri}$ABSOLUTE_URI", accessToken!!)
                 val client = OkHttpClient.Builder().build()
@@ -130,19 +139,24 @@ class ItemRemoteDataSource(
                     val ciAmount = model.createProperty(Utilities.NS_Item + "amount")
 
                     val body = response.body!!.string().byteInputStream()
-                    model.read(body, "TURTLE", null)
+                    model.read(body, null, "TURTLE")
                     val res = model.listResourcesWithProperty(ciName)
                     val itemList = mutableListOf<Item>()
                     while (res.hasNext()) {
                         val nextResource = res.nextResource()
                         itemList.add(resourceToItem(nextResource))
                     }
-                    latestList = itemList
+                    latestListMutex.withLock {
+                        latestList = itemList
+                    }
+                } else {
+                    Log.d(TAG, "${response.code} ${response.body!!.string()}")
                 }
-            }
+                return@async this@ItemRemoteDataSource.latestList
+            }.await()
+        } else {
+            return latestListMutex.withLock { this.latestList }
         }
-
-        return latestList
     }
 
 

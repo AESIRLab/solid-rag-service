@@ -1,5 +1,6 @@
 package org.aesirlab.model
 
+import android.view.Display.Mode
 import com.hp.hpl.jena.rdf.model.Model
 import com.hp.hpl.jena.rdf.model.ModelFactory
 import com.hp.hpl.jena.rdf.model.ResourceFactory
@@ -103,6 +104,10 @@ public class ItemDaoImpl(
     val os = file.outputStream()
     model.write(os, null, null)
     modelLiveData.value = getAllItems()
+  }
+
+  override fun resetModel() {
+    this.model = ModelFactory.createDefaultModel()
   }
 
   override suspend fun update(item: Item) {

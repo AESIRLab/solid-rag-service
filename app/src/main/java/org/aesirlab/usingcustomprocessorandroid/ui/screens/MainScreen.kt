@@ -35,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.aesirlab.model.Item
 import org.aesirlab.usingcustomprocessorandroid.R
 import org.aesirlab.usingcustomprocessorandroid.ui.ItemViewModel
@@ -53,26 +54,36 @@ fun MainScreen(
         factory = ItemViewModel.Factory
     )
 
-    LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
-        runBlocking {
-            val webId = store.getWebId().first()
-            viewModel.updateWebId(webId)
-            if (!viewModel.remoteIsAvailable()) {
-                val accessToken = store.getAccessToken().first()
-                val signingJwk = store.getSigner().first()
-                // TODO: need add expiration time
-                val expirationTime = 2301220800000// store.get
-                viewModel.setRemoteRepositoryData(
-                    accessToken,
-                    signingJwk,
-                    webId,
-                    expirationTime
-                )
+    LifecycleEventEffect(event = Lifecycle.Event.ON_START) {
+        coroutineScope.launch {
+            withContext(Dispatchers.IO) {
+                val webId = store.getWebId().first()
+                viewModel.updateWebId(webId)
+                if (!viewModel.remoteIsAvailable()) {
+                    val accessToken = store.getAccessToken().first()
+                    val signingJwk = store.getSigner().first()
+                    // TODO: need add expiration time
+                    val expirationTime = 2301220800000// store.get
+                    viewModel.setRemoteRepositoryData(
+                        accessToken,
+                        signingJwk,
+                        webId,
+                        expirationTime
+                    )
+                }
             }
         }
     }
 
-    LifecycleEventEffect(event = Lifecycle.Event.ON_STOP) {
+    LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
+        coroutineScope.launch {
+            withContext(Dispatchers.IO) {
+                viewModel.refreshAsync()
+            }
+        }
+    }
+
+    LifecycleEventEffect(event = Lifecycle.Event.ON_PAUSE) {
         coroutineScope.launch {
             viewModel.updateRemote()
         }
@@ -129,7 +140,12 @@ fun MainScreen(
                 Text("Add item!")
             }
         }
-        Button(onClick = onLogoutClick ) {
+        Button(onClick = {
+            coroutineScope.launch {
+                viewModel.updateRemote()
+            }
+            onLogoutClick
+        } ) {
             Text("Logout")
         }
 

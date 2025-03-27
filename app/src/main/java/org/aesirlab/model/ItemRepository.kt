@@ -19,6 +19,10 @@ public class ItemRepository(
     }
   }
 
+  fun resetModel() {
+    itemDao.resetModel()
+  }
+
   @WorkerThread suspend fun insertWebId(webId: String) {
     itemDao.updateWebId(webId)
   }

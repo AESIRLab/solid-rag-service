@@ -74,7 +74,7 @@ android {
 }
 
 
-val version = "0.0.13"
+val version = "0.0.15"
 dependencies {
 
     implementation(libs.androidx.core.ktx)

@@ -37,18 +37,20 @@ class ItemViewModel(
         }
     }
 
-    suspend fun setRemoteRepositoryData(
+    fun remoteIsAvailable(): Boolean {
+        return itemRemoteDataSource.remoteAccessible()
+    }
+
+    fun setRemoteRepositoryData(
         accessToken: String,
         signingJwk: String,
         webId: String,
         expirationTime: Long,
     ) {
-        viewModelScope.launch {
-            itemRemoteDataSource.signingJwk = signingJwk
-            itemRemoteDataSource.webId = webId
-            itemRemoteDataSource.expirationTime = expirationTime
-            itemRemoteDataSource.accessToken = accessToken
-        }
+        itemRemoteDataSource.signingJwk = signingJwk
+        itemRemoteDataSource.webId = webId
+        itemRemoteDataSource.expirationTime = expirationTime
+        itemRemoteDataSource.accessToken = accessToken
     }
 
     suspend fun updateWebId(webId: String) {
@@ -57,6 +59,7 @@ class ItemViewModel(
             repository.allItemsAsFlow().collect { list ->
                 _allItems.value = list
             }
+            itemRemoteDataSource.setLatestList(_allItems.value)
         }
     }
 
@@ -67,6 +70,8 @@ class ItemViewModel(
             repository.allItemsAsFlow().collect { list ->
                 _allItems.value = list
             }
+            itemRemoteDataSource.setLatestList(_allItems.value)
+            itemRemoteDataSource.updateRemoteItemList()
         }
     }
 
@@ -85,6 +90,14 @@ class ItemViewModel(
             repository.allItemsAsFlow().collect { list ->
                 _allItems.value = list
             }
+            itemRemoteDataSource.setLatestList(_allItems.value)
+            itemRemoteDataSource.updateRemoteItemList()
+        }
+    }
+
+    suspend fun updateRemote() {
+        viewModelScope.launch {
+            itemRemoteDataSource.updateRemoteItemList()
         }
     }
 
@@ -94,6 +107,8 @@ class ItemViewModel(
             repository.allItemsAsFlow().collect { list ->
                 _allItems.value = list
             }
+            itemRemoteDataSource.setLatestList(_allItems.value)
+            itemRemoteDataSource.updateRemoteItemList()
         }
     }
 

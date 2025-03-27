@@ -57,9 +57,26 @@ fun MainScreen(
         runBlocking {
             val webId = store.getWebId().first()
             viewModel.updateWebId(webId)
+            if (!viewModel.remoteIsAvailable()) {
+                val accessToken = store.getAccessToken().first()
+                val signingJwk = store.getSigner().first()
+                // TODO: need add expiration time
+                val expirationTime = 2301220800000// store.get
+                viewModel.setRemoteRepositoryData(
+                    accessToken,
+                    signingJwk,
+                    webId,
+                    expirationTime
+                )
+            }
         }
     }
 
+    LifecycleEventEffect(event = Lifecycle.Event.ON_STOP) {
+        coroutineScope.launch {
+            viewModel.updateRemote()
+        }
+    }
 
     val items by viewModel.allItems.collectAsState()
 

@@ -68,7 +68,7 @@ class ItemRemoteDataSource(
         latestList = items
     }
 
-    suspend fun updateRemoteItemList(items: List<Item>) {
+    suspend fun updateRemoteItemList() {
         if (webId != null && accessToken != null && accessTokenIsValid()) {
             val client = OkHttpClient()
             withContext(ioDispatcher) {
@@ -82,7 +82,7 @@ class ItemRemoteDataSource(
                 model.setNsPrefix("ci", Utilities.NS_Item)
                 val ciName = model.createProperty(Utilities.NS_Item + "name")
                 val ciAmount = model.createProperty(Utilities.NS_Item + "amount")
-                items.forEach { ci ->
+                latestList.forEach { ci ->
                     val id = ci.id
                     val mThingUri = model.createResource("$resourceUri#${id}")
                     mThingUri.addLiteral(ciName, ci.name)
@@ -93,6 +93,9 @@ class ItemRemoteDataSource(
                 val rBody = bOutputStream.toByteArray().toRequestBody(null, 0, bOutputStream.size())
                 val putRequest = generatePutRequest(signingJwk!!, accessToken!!, resourceUri, rBody)
                 val putResponse = client.newCall(putRequest).execute()
+                if (putResponse.code !in 200..299) {
+                    throw Error("failed to update remote repository because: ${putResponse.code} ${putResponse.message}")
+                }
             }
         }
     }

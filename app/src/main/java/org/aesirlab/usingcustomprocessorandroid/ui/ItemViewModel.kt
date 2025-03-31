@@ -1,6 +1,5 @@
 package org.aesirlab.usingcustomprocessorandroid.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -12,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.aesirlab.model.Item
 import org.aesirlab.model.ItemRemoteDataSource
@@ -27,22 +27,22 @@ class ItemViewModel(
     private var _allItems: MutableStateFlow<List<Item>> = MutableStateFlow(listOf())
     val allItems: StateFlow<List<Item>> get() = _allItems
 
-
-    public suspend fun refreshAsync() {
-        val newList = mutableListOf<Item>()
-        Log.d(TAG, itemRemoteDataSource.remoteAccessible().toString())
+    suspend fun refreshAsync() {
+        val currList = repository.allItemsAsFlow().first()
+        val remoteList = mutableListOf<Item>()
         if (itemRemoteDataSource.remoteAccessible()) {
-            newList += itemRemoteDataSource.fetchRemoteItemList()
-            Log.d(TAG, "len of newList: ${newList.size}")
-            repository.resetModel()
-            repository.insertMany(newList)
+            remoteList += itemRemoteDataSource.fetchRemoteItemList()
         }
-
-        repository.allItemsAsFlow().collect { list ->
-            newList += list
-            _allItems.value = newList.distinct()
+        val combinedList = remoteList + currList
+        for (item in combinedList) {
+            println("combinedList: ${item.id}, ${item.name}, ${item.amount}")
         }
-
+        val newList = (remoteList + currList).distinctBy { it.id }
+        for (item in newList) {
+            println("newList: ${item.id}, ${item.name}, ${item.amount}")
+        }
+        repository.overwriteModelWithList(newList)
+        _allItems.value = newList.sortedBy { it.id }
     }
 
     init {
@@ -55,7 +55,7 @@ class ItemViewModel(
         return itemRemoteDataSource.remoteAccessible()
     }
 
-    suspend fun setRemoteRepositoryData(
+    fun setRemoteRepositoryData(
         accessToken: String,
         signingJwk: String,
         webId: String,
@@ -65,16 +65,12 @@ class ItemViewModel(
         itemRemoteDataSource.webId = webId
         itemRemoteDataSource.expirationTime = expirationTime
         itemRemoteDataSource.accessToken = accessToken
-        refreshAsync()
     }
 
     suspend fun updateWebId(webId: String) {
         viewModelScope.launch {
             repository.insertWebId(webId)
-            repository.allItemsAsFlow().collect { list ->
-                _allItems.value = list
-                itemRemoteDataSource.setLatestList(list)
-            }
+            _allItems.value = repository.allItemsAsFlow().first().sortedBy { it.id }
         }
     }
 
@@ -82,48 +78,43 @@ class ItemViewModel(
         viewModelScope.launch {
             repository.insert(item)
             // not sure if this is the right way to do it...
-            repository.allItemsAsFlow().collect { list ->
-                _allItems.value = list
-                itemRemoteDataSource.setLatestList(list)
-//                itemRemoteDataSource.updateRemoteItemList()
-            }
+            _allItems.value = repository.allItemsAsFlow().first().sortedBy { it.id }
         }
     }
 
     suspend fun insertMany(list: List<Item>) {
         viewModelScope.launch {
             repository.insertMany(list)
-            repository.allItemsAsFlow().collect { list ->
-                _allItems.value = list
-            }
+            _allItems.value = repository.allItemsAsFlow().first().sortedBy { it.id }
         }
     }
 
     suspend fun delete(item: Item) {
         viewModelScope.launch {
             repository.deleteByUri(item.id)
-            repository.allItemsAsFlow().collect { list ->
-                _allItems.value = list
-                itemRemoteDataSource.setLatestList(_allItems.value)
-            }
-//            itemRemoteDataSource.updateRemoteItemList()
+            _allItems.value = repository.allItemsAsFlow().first().sortedBy { it.id }
         }
     }
 
-    suspend fun updateRemote() {
+    suspend fun updateRemote(items: List<Item>) {
         viewModelScope.launch {
-            itemRemoteDataSource.updateRemoteItemList()
+            itemRemoteDataSource.updateRemoteItemList(items)
         }
     }
 
-    suspend fun update(item: Item) {
+    suspend fun update(item: Item, change: Int) {
         viewModelScope.launch {
-            repository.update(item)
-            repository.allItemsAsFlow().collect { list ->
-                _allItems.value = list
+            val currentList = _allItems.value
+            val newList = currentList.map {
+                if (it == item) {
+                    val n = it.copy(id = it.id, name = it.name, amount = it.amount + change)
+                    repository.update(n)
+                    n
+                } else {
+                    it
+                }
             }
-            itemRemoteDataSource.setLatestList(_allItems.value)
-//            itemRemoteDataSource.updateRemoteItemList()
+            _allItems.value = newList.sortedBy { it.id }
         }
     }
 

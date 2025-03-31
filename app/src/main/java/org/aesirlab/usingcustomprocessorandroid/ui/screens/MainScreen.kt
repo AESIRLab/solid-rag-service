@@ -70,6 +70,7 @@ fun MainScreen(
                         webId,
                         expirationTime
                     )
+                    viewModel.refreshAsync()
                 }
             }
         }
@@ -83,34 +84,37 @@ fun MainScreen(
         }
     }
 
+    val items by viewModel.allItems.collectAsState()
+
     LifecycleEventEffect(event = Lifecycle.Event.ON_PAUSE) {
         coroutineScope.launch {
-            viewModel.updateRemote()
+            viewModel.updateRemote(items)
         }
     }
 
-    val items by viewModel.allItems.collectAsState()
-
     fun onAddClick(thing: String) {
-        val newItem = Item("", thing)
+        val newItem = Item(java.util.UUID.randomUUID().toString(), thing)
         coroutineScope.launch {
             viewModel.insert(newItem)
         }
     }
 
     fun onIncreaseClick(item: Item) {
-        item.amount += 1
         coroutineScope.launch {
-            viewModel.update(item)
+            viewModel.update(item, 1)
         }
     }
 
     fun onDecreaseClick(item: Item) {
         if (item.amount > 0) {
-            item.amount -= 1
             coroutineScope.launch {
-                viewModel.update(item)
+                viewModel.update(item, -1)
             }
+        }
+         else {
+             coroutineScope.launch {
+                 viewModel.delete(item)
+             }
         }
     }
 
@@ -142,18 +146,25 @@ fun MainScreen(
         }
         Button(onClick = {
             coroutineScope.launch {
-                viewModel.updateRemote()
+                viewModel.updateRemote(items)
             }
-            onLogoutClick
+            onLogoutClick()
         } ) {
             Text("Logout")
+        }
+        Button(onClick = {
+            coroutineScope.launch {
+                viewModel.updateWebId("https://id.inrupt.com/zg009test")
+            }
+        }) {
+            Text("Set Web Id")
         }
 
         if (items.isEmpty()) {
             Text("Nothing in your items list!")
         } else {
             LazyColumn(Modifier.fillMaxSize()) {
-                items(items) { item ->
+                items(items, key = { it.id }) { item ->
                     ItemComp(item,
                         onIncreaseClick = { selectedItem ->
                             onIncreaseClick(selectedItem)
@@ -200,7 +211,5 @@ fun ItemComp(
         Button(onClick = { onDeleteClick(item) }) {
             Text("Delete Item")
         }
-
-
     }
 }

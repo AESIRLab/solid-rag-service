@@ -70,11 +70,12 @@ class ItemRemoteDataSource(
     private val latestListMutex = Mutex()
     private var latestList: List<Item> = emptyList()
 
-    fun setLatestList(items: List<Item>) {
+    private fun setLatestList(items: List<Item>) {
         latestList = items
     }
 
-    suspend fun updateRemoteItemList() {
+    suspend fun updateRemoteItemList(items: List<Item>) {
+        setLatestList(items)
         if (webId != null && accessToken != null && accessTokenIsValid()) {
             val client = OkHttpClient()
             externalScope.launch {

@@ -19,5 +19,9 @@ public interface ItemDao {
 
   public fun updateWebId(webId: String)
 
+  public suspend fun deleteAll()
+
   fun resetModel()
+
+  suspend fun overwriteModelWithList(items: List<Item>)
 }

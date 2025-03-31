@@ -67,12 +67,12 @@ public class ItemDaoImpl(
     this.model = model
   }
 
-  public val modelLiveData: MutableStateFlow<List<Item>> =
+  private val modelLiveData: MutableStateFlow<List<Item>> =
       MutableStateFlow(getAllItems())
 
   override fun getAllItemsAsFlow(): Flow<List<Item>> = modelLiveData
 
-  public override fun getAllItems(): List<Item> {
+  override fun getAllItems(): List<Item> {
     val itemList = mutableListOf<Item>()
     val res = model.listResourcesWithProperty(model.createProperty(Utilities.NS_Item + "name"))
     while (res.hasNext()) {
@@ -106,8 +106,45 @@ public class ItemDaoImpl(
     modelLiveData.value = getAllItems()
   }
 
+  override suspend fun deleteAll() {
+    val model = ModelFactory.createDefaultModel()
+    model.setNsPrefix("acp", Utilities.NS_ACP)
+    model.setNsPrefix("acl", Utilities.NS_ACL)
+    model.setNsPrefix("ldp", Utilities.NS_LDP)
+    model.setNsPrefix("skos", Utilities.NS_SKOS)
+    model.setNsPrefix("ti", Utilities.NS_Item)
+    val file = File(baseDir, saveFilePath)
+    val os = file.outputStream()
+    model.write(os, null, null)
+    this.model = model
+    modelLiveData.value = getAllItems()
+  }
+
   override fun resetModel() {
-    this.model = ModelFactory.createDefaultModel()
+    val newModel = ModelFactory.createDefaultModel()
+    newModel.setNsPrefix("acp", Utilities.NS_ACP)
+    newModel.setNsPrefix("acl", Utilities.NS_ACL)
+    newModel.setNsPrefix("ldp", Utilities.NS_LDP)
+    newModel.setNsPrefix("skos", Utilities.NS_SKOS)
+    newModel.setNsPrefix("ti", Utilities.NS_Item)
+    this.model = newModel
+  }
+
+  override suspend fun overwriteModelWithList(items: List<Item>) {
+    resetModel()
+    for (item in items) {
+      val mThingUri = model.createResource("$baseUri#${item.id}")
+      val mname = model.createProperty(Utilities.NS_Item + "name")
+      val nameLiteral = ResourceFactory.createTypedLiteral(item.name)
+      mThingUri.addLiteral(mname, nameLiteral)
+      val mamount = model.createProperty(Utilities.NS_Item + "amount")
+      val amountLiteral = ResourceFactory.createTypedLiteral(item.amount)
+      mThingUri.addLiteral(mamount, amountLiteral)
+    }
+    val file = File(baseDir, saveFilePath)
+    val os = file.outputStream()
+    model.write(os, null, null)
+    modelLiveData.value = getAllItems()
   }
 
   override suspend fun update(item: Item) {
@@ -117,18 +154,17 @@ public class ItemDaoImpl(
       val mname = model.createProperty(Utilities.NS_Item + "name")
       resourceInModel.removeAll(mname)
       val nameLiteral = ResourceFactory.createTypedLiteral(item.name)
-      resourceInModel.addProperty(mname, nameLiteral)
+      resourceInModel.addLiteral(mname, nameLiteral)
       val mamount = model.createProperty(Utilities.NS_Item + "amount")
       resourceInModel.removeAll(mamount)
       val amountLiteral = ResourceFactory.createTypedLiteral(item.amount)
-      resourceInModel.addProperty(mamount, amountLiteral)
+      resourceInModel.addLiteral(mamount, amountLiteral)
       val file = File(baseDir, saveFilePath)
       val os = file.outputStream()
       model.write(os, null, null)
       modelLiveData.value = getAllItems()
-    } else {
-      throw Error("item with ${item.id} not found.")
     }
+    modelLiveData.value = getAllItems()
   }
 
   override fun getItemByIdAsFlow(id: String): Flow<Item> {

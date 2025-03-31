@@ -27,7 +27,7 @@ public class Utilities {
       val nameProp = anonModel.createProperty(NS_Item + "name")
       val nameObject = resource.getProperty(nameProp).`object`
       val nameLiteral = ResourceFactory.createTypedLiteral(nameObject)
-      val name = nameLiteral.value.toString()
+      val name = nameLiteral.value.toString().split("^^")[0]
       val amountProp = anonModel.createProperty(NS_Item + "amount")
       val amountObject = resource.getProperty(amountProp).`object`
       val amountLiteral = ResourceFactory.createTypedLiteral(amountObject)

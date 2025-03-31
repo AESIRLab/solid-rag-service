@@ -147,6 +147,7 @@ fun MainScreen(
         Button(onClick = {
             coroutineScope.launch {
                 viewModel.updateRemote(items)
+                viewModel.resetState()
             }
             onLogoutClick()
         } ) {

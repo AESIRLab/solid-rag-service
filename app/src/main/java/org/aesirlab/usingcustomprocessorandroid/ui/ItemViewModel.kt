@@ -27,11 +27,23 @@ class ItemViewModel(
     private var _allItems: MutableStateFlow<List<Item>> = MutableStateFlow(listOf())
     val allItems: StateFlow<List<Item>> get() = _allItems
 
+    suspend fun resetState() {
+        viewModelScope.launch {
+            repository.deleteAll()
+        }
+    }
+
     suspend fun refreshAsync() {
         val currList = repository.allItemsAsFlow().first()
+        for (item in currList) {
+            println("currList: ${item.id}, ${item.name}, ${item.amount}")
+        }
         val remoteList = mutableListOf<Item>()
         if (itemRemoteDataSource.remoteAccessible()) {
             remoteList += itemRemoteDataSource.fetchRemoteItemList()
+            for (item in remoteList) {
+                println("remoteList: ${item.id}, ${item.name}, ${item.amount}")
+            }
         }
         val combinedList = remoteList + currList
         for (item in combinedList) {
@@ -99,6 +111,7 @@ class ItemViewModel(
     suspend fun updateRemote(items: List<Item>) {
         viewModelScope.launch {
             itemRemoteDataSource.updateRemoteItemList(items)
+//            repository.deleteAll()
         }
     }
 

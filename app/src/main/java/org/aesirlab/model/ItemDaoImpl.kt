@@ -184,13 +184,13 @@ public class ItemDaoImpl(
       val inStream = file.inputStream()
       ModelFactory.createDefaultModel().read(inStream, null)
     } else {
-      model = ModelFactory.createDefaultModel()
-      model.setNsPrefix("acp", Utilities.NS_ACP)
-      model.setNsPrefix("acl", Utilities.NS_ACL)
-      model.setNsPrefix("ldp", Utilities.NS_LDP)
-      model.setNsPrefix("skos", Utilities.NS_SKOS)
-      model.setNsPrefix("ti", Utilities.NS_Item)
-      model
+      val newModel = ModelFactory.createDefaultModel()
+      newModel.setNsPrefix("acp", Utilities.NS_ACP)
+      newModel.setNsPrefix("acl", Utilities.NS_ACL)
+      newModel.setNsPrefix("ldp", Utilities.NS_LDP)
+      newModel.setNsPrefix("skos", Utilities.NS_SKOS)
+      newModel.setNsPrefix("ti", Utilities.NS_Item)
+      newModel
     }
     modelLiveData.value = getAllItems()
   }

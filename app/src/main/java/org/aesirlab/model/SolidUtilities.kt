@@ -28,6 +28,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
 import org.aesirlab.model.Utilities.Companion.ABSOLUTE_URI
 import org.json.JSONObject
+import java.util.Locale
 
 public class SolidUtilities(
   context: Context,
@@ -142,7 +143,7 @@ public class SolidUtilities(
 
 public suspend fun getStorage(webId: String): String {
   val client = OkHttpClient()
-  val webIdRequest = Request.Builder().url(webId).build()
+  val webIdRequest = Request.Builder().url(webId.lowercase(Locale.ROOT)).build()
   val webIdResponse = client.newCall(webIdRequest).execute()
   val responseString = webIdResponse.body!!.string()
   val byteArray = responseString.toByteArray()

@@ -19,7 +19,7 @@ public class Utilities {
 
     public const val NS_SOLID: String = "http://www.w3.org/ns/solid/terms#"
 
-    public const val NS_Item: String = "https://example.org"
+    public const val NS_Item: String = "https://example.org/item#"
 
     public fun resourceToItem(resource: Resource): Item {
       val anonModel = ModelFactory.createDefaultModel()

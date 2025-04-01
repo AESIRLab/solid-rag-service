@@ -41,6 +41,10 @@ class ItemRepository(
     itemDao.deleteAll()
   }
 
+  fun resetModel() {
+    itemDao.resetModel()
+  }
+
   @WorkerThread
   suspend fun overwriteModelWithList(items: List<Item>) {
     itemDao.overwriteModelWithList(items)

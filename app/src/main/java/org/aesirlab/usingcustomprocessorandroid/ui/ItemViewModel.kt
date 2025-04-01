@@ -29,7 +29,7 @@ class ItemViewModel(
 
     suspend fun resetState() {
         viewModelScope.launch {
-            repository.deleteAll()
+            repository.resetModel()
         }
     }
 
@@ -111,7 +111,6 @@ class ItemViewModel(
     suspend fun updateRemote(items: List<Item>) {
         viewModelScope.launch {
             itemRemoteDataSource.updateRemoteItemList(items)
-//            repository.deleteAll()
         }
     }
 

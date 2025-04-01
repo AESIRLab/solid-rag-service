@@ -40,6 +40,7 @@ import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
 import org.json.JSONException
 import org.json.JSONObject
 import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
+import java.util.Random
 
 @Composable
 fun StartButton(text: String, onClick: () -> Unit) {
@@ -61,6 +62,7 @@ fun StartAuthScreen(
         horizontalAlignment =  Alignment.CenterHorizontally,
     ) {
         val appTitle = "Android Item Tracker Solid"
+//        val appTitle = generateRandomString(24)
         var webId by rememberSaveable {
             mutableStateOf("")
         }

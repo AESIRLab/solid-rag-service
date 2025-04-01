@@ -1,6 +1,5 @@
 package org.aesirlab.model
 
-import android.view.Display.Mode
 import com.hp.hpl.jena.rdf.model.Model
 import com.hp.hpl.jena.rdf.model.ModelFactory
 import com.hp.hpl.jena.rdf.model.ResourceFactory
@@ -11,8 +10,7 @@ import org.aesirlab.model.Utilities.Companion.resourceToItem
 import java.io.File
 import java.util.Random
 
-public class ItemDaoImpl(
-//  public val model: Model,
+class ItemDaoImpl(
   private val baseUri: String,
   private val baseDir: File,
   private var webId: String?,
@@ -106,6 +104,22 @@ public class ItemDaoImpl(
     modelLiveData.value = getAllItems()
   }
 
+  override fun resetModel() {
+    val model = ModelFactory.createDefaultModel()
+    model.setNsPrefix("acp", Utilities.NS_ACP)
+    model.setNsPrefix("acl", Utilities.NS_ACL)
+    model.setNsPrefix("ldp", Utilities.NS_LDP)
+    model.setNsPrefix("skos", Utilities.NS_SKOS)
+    model.setNsPrefix("ti", Utilities.NS_Item)
+    // TODO: i dont think i want to do this part, I think I just want to create a blank model upon logout
+//    val file = File(baseDir, saveFilePath)
+//    val os = file.outputStream()
+//    model.write(os, null, null)
+    this.model = model
+    modelLiveData.value = getAllItems()
+  }
+
+  // TODO: do i need to reset webid and all the arguments to this class?
   override suspend fun deleteAll() {
     val model = ModelFactory.createDefaultModel()
     model.setNsPrefix("acp", Utilities.NS_ACP)
@@ -118,16 +132,6 @@ public class ItemDaoImpl(
     model.write(os, null, null)
     this.model = model
     modelLiveData.value = getAllItems()
-  }
-
-  override fun resetModel() {
-    val newModel = ModelFactory.createDefaultModel()
-    newModel.setNsPrefix("acp", Utilities.NS_ACP)
-    newModel.setNsPrefix("acl", Utilities.NS_ACL)
-    newModel.setNsPrefix("ldp", Utilities.NS_LDP)
-    newModel.setNsPrefix("skos", Utilities.NS_SKOS)
-    newModel.setNsPrefix("ti", Utilities.NS_Item)
-    this.model = newModel
   }
 
   override suspend fun overwriteModelWithList(items: List<Item>) {

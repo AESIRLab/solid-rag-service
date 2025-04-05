@@ -115,4 +115,11 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.4.0") // Ensure you're using the latest version
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1") // For ViewModel integration with Compose
     implementation("androidx.activity:activity-compose:1.6.0") // For Compose activity support
+
+    // for google aiedge rag
+    implementation("com.google.ai.edge.localagents:localagents-rag:0.1.0")
+    implementation("com.google.mediapipe:tasks-genai:0.10.22")
+    // for await on listenablefuture
+    implementation("com.google.guava:guava:33.3.1-android")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.9.0")
 }

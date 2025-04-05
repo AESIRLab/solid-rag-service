@@ -3,6 +3,7 @@ package org.aesirlab.usingcustomprocessorandroid.service
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -17,20 +18,29 @@ import org.aesirlab.usingcustomprocessorandroid.rag.RagPipeline
 private const val MSG_PROMPT = 1
 private const val MSG_RESPONSE = 2
 private const val TAG = "RAGService"
-class RAGService(private val ragPipeline: RagPipeline): Service() {
+class RAGService: Service() {
     private var messenger: Messenger? = null
+    private var ragPipeline: RagPipeline? = null
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+//        if (ragPipeline == null) {
+//            this.ragPipeline = RagPipeline(applicationContext)
+//        }
+        return startId
+    }
 
     override fun onBind(intent: Intent?): IBinder? {
         if (messenger == null) {
             synchronized(RAGService::class) {
-                messenger = Messenger(QueryHandler(this, ragPipeline))
+                messenger = Messenger(QueryHandler(ragPipeline))
             }
         }
         return messenger!!.binder
     }
+
 }
 
-private class QueryHandler(val context: Context, val ragPipeline: RagPipeline): Handler() {
+private class QueryHandler(val ragPipeline: RagPipeline?): Handler(Looper.getMainLooper()) {
     override fun handleMessage(msg: Message) {
         when (msg.what) {
             MSG_PROMPT -> {
@@ -38,11 +48,11 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline): 
                 val prompt = msg.data.getString("prompt")
                 val b = Bundle()
                 if (prompt != null) {
-                    runBlocking {
-                        ragPipeline.generateResponse(prompt) { response, _ ->
-                            b.putString("response", response.text)
-                        }
-                    }
+//                    runBlocking {
+//                        ragPipeline.generateResponse(prompt) { response, _ ->
+//                            b.putString("response", response.text)
+//                        }
+//                    }
                 } else {
                     b.putString("response", "you must provide a 'prompt' extra in your message")
                 }

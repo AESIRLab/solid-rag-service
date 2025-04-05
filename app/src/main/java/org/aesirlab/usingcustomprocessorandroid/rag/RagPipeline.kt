@@ -33,7 +33,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** The RAG pipeline for LLM generation. */
-class RagPipeline(val context: Context) {
+class RagPipeline(application: Application) {
+
     private val mediaPipeLanguageModelOptions: LlmInferenceOptions =
         LlmInferenceOptions.builder().setModelPath(
             GEMMA_MODEL_PATH
@@ -43,7 +44,7 @@ class RagPipeline(val context: Context) {
             .setTopP(0.95f).setTopK(64).build()
     private val mediaPipeLanguageModel: MediaPipeLlmBackend =
         MediaPipeLlmBackend(
-            context, mediaPipeLanguageModelOptions,
+            application.applicationContext, mediaPipeLanguageModelOptions,
             mediaPipeLanguageModelSessionOptions
         )
 

@@ -20,8 +20,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.aesirlab.usingcustomprocessorandroid.REDIRECT_URI
 import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
+import org.aesirlab.usingcustomprocessorandroid.rag.RagPipeline
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.AuthCompleteScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.MainScreen
+import org.aesirlab.usingcustomprocessorandroid.ui.screens.RagMainScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.StartAuthScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.UnfetchableWebIdScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.WebsocketConnectScreen
@@ -31,11 +33,14 @@ enum class Screens {
     AuthCompleteScreen,
     UnfetchableWebIdScreen,
     StartAuthScreen,
-    WebsocketConnectScreen
+    WebsocketConnectScreen,
+    RagMainScreen
 }
 
 @Composable
-fun App() {
+fun App(
+    ragPipeline: RagPipeline
+) {
     val navController = rememberNavController()
     val applicationContext = LocalContext.current.applicationContext
     val coroutineScope = rememberCoroutineScope()
@@ -54,7 +59,7 @@ fun App() {
                     store.getWebId().first()
                 }
                 if (webId.isNotBlank()) {
-                    navController.navigate(route = Screens.MainScreen.name)
+                    navController.navigate(route = Screens.RagMainScreen.name)
                 }
                 StartAuthScreen(
                     tokenStore = store,
@@ -84,7 +89,7 @@ fun App() {
                 deepLinks = listOf(navDeepLink { uriPattern = REDIRECT_URI })) {
 
                 AuthCompleteScreen(tokenStore = store) {
-                    navController.navigate(Screens.MainScreen.name)
+                    navController.navigate(Screens.RagMainScreen.name)
                 }
             }
             composable(
@@ -111,6 +116,11 @@ fun App() {
                         navController.navigate(Screens.StartAuthScreen.name)
                     }
                 )
+            }
+            composable(route = Screens.RagMainScreen.name) {
+                val accessToken = runBlocking { store.getAccessToken().first() }
+                val signingJwk = runBlocking { store.getSigner().first() }
+                RagMainScreen(ragPipeline, accessToken, signingJwk)
             }
         }
     }

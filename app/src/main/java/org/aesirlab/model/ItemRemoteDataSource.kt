@@ -47,13 +47,13 @@ private fun generateCustomToken(signingJwk: String, method: String, uri: String)
     return signedJWT.serialize()
 }
 
-private fun generateGetRequest(signingJwk: String, resourceUri: String, accessToken: String): Request =
+fun generateGetRequest(signingJwk: String, resourceUri: String, accessToken: String): Request =
     Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken(signingJwk, "GET",
         resourceUri)).addHeader("Authorization", "DPoP $accessToken").addHeader("Content-Type",
         "text/turtle").addHeader("Link",
         "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("GET", null).build()
 
-private fun generatePutRequest(signingJwk: String, accessToken: String, resourceUri: String, rBody: RequestBody): Request {
+fun generatePutRequest(signingJwk: String, accessToken: String, resourceUri: String, rBody: RequestBody): Request {
     return Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken(signingJwk, "PUT",
         resourceUri)).addHeader("Authorization", "DPoP $accessToken").addHeader("content-type",
         "text/turtle").addHeader("Link",

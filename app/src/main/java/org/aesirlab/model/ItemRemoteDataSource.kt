@@ -53,10 +53,10 @@ fun generateGetRequest(signingJwk: String, resourceUri: String, accessToken: Str
         "text/turtle").addHeader("Link",
         "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("GET", null).build()
 
-fun generatePutRequest(signingJwk: String, accessToken: String, resourceUri: String, rBody: RequestBody): Request {
+fun generatePutRequest(signingJwk: String, accessToken: String, resourceUri: String, rBody: RequestBody, contentType: String = "text/turtle"): Request {
     return Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken(signingJwk, "PUT",
         resourceUri)).addHeader("Authorization", "DPoP $accessToken").addHeader("content-type",
-        "text/turtle").addHeader("Link",
+        contentType).addHeader("Link",
         "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("PUT", rBody).build()
 }
 

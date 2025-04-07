@@ -28,6 +28,7 @@ import java.io.InputStreamReader
 import java.util.concurrent.Executors
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.guava.await
+import okhttp3.internal.immutableListOf
 import java.io.InputStream
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -84,6 +85,10 @@ class RagPipeline(application: Application) {
             },
             Executors.newSingleThreadExecutor(),
         )
+    }
+
+    fun forget() {
+        config.semanticMemory.getOrNull()?.recordBatchedMemoryItems(ImmutableList.copyOf(listOf()))
     }
 
     fun memorizeChunks(data: InputStream) {

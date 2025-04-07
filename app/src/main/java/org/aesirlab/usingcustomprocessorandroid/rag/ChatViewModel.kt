@@ -3,10 +3,15 @@ package org.aesirlab.usingcustomprocessorandroid.rag
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.aesirlab.usingcustomprocessorandroid.ui.SolidMobileItemApplication
 import java.io.InputStream
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -28,6 +33,12 @@ class ChatViewModel(private val ragPipeline: RagPipeline) : ViewModel() {
         executorService.submit { viewModelScope.launch { requestResponseFromModel(prompt) } }
     }
 
+    fun resetState() {
+        statistics.value = ""
+        messages.clear()
+        ragPipeline.forget()
+    }
+
     private suspend fun requestResponseFromModel(prompt: String) =
         withContext(backgroundExecutor.asCoroutineDispatcher()) {
             ragPipeline.generateResponse(
@@ -45,6 +56,16 @@ class ChatViewModel(private val ragPipeline: RagPipeline) : ViewModel() {
             messages[messages.lastIndex] = MessageData(role, message)
         } else {
             appendMessage(role, message)
+        }
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as SolidMobileItemApplication)
+                val ragPipeline = RagPipeline(application = application)
+                ChatViewModel(ragPipeline)
+            }
         }
     }
 

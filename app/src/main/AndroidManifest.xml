@@ -38,7 +38,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.RAGService"
+        <service android:name=".service.RagService"
             android:exported="true">
             <intent-filter>
                 <action android:name="org.aesirlab.rag.TRANSMOGRIFY" />

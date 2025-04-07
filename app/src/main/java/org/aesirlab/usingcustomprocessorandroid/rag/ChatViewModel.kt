@@ -9,8 +9,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.aesirlab.model.Item
 import org.aesirlab.usingcustomprocessorandroid.ui.SolidMobileItemApplication
 import java.io.InputStream
 import java.util.concurrent.Executor
@@ -18,10 +21,13 @@ import java.util.concurrent.Executors
 
 /** Instantiates the View Model for the chat view. */
 class ChatViewModel(private val ragPipeline: RagPipeline) : ViewModel() {
-    internal val messages = emptyList<MessageData>().toMutableStateList()
+//    internal val messages = emptyList<MessageData>().toMutableStateList()
     internal val statistics = mutableStateOf("")
     private val executorService = Executors.newSingleThreadExecutor()
     private val backgroundExecutor: Executor = Executors.newSingleThreadExecutor()
+
+    private var _allMessages: MutableStateFlow<List<MessageData>> = MutableStateFlow(listOf())
+    val allMessageData: StateFlow<List<MessageData>> get() = _allMessages
 
     fun memorizeChunks(data: InputStream) {
         ragPipeline.memorizeChunks(data)
@@ -35,7 +41,7 @@ class ChatViewModel(private val ragPipeline: RagPipeline) : ViewModel() {
 
     fun resetState() {
         statistics.value = ""
-        messages.clear()
+        _allMessages.value = listOf()
         ragPipeline.forget()
     }
 
@@ -48,12 +54,12 @@ class ChatViewModel(private val ragPipeline: RagPipeline) : ViewModel() {
         }
 
     private fun appendMessage(role: MessageOwner, message: String) {
-        messages.add(MessageData(role, message))
+        _allMessages.value.plus(MessageData(role, message))
     }
 
-    private fun updateLastMessage(role: MessageOwner, message: String) {
-        if (messages.isNotEmpty() && messages[messages.lastIndex].owner == role) {
-            messages[messages.lastIndex] = MessageData(role, message)
+    fun updateLastMessage(role: MessageOwner, message: String) {
+        if (_allMessages.value.isNotEmpty()) {
+            _allMessages.value.plus(MessageData(role, message))
         } else {
             appendMessage(role, message)
         }

@@ -25,6 +25,7 @@ import org.aesirlab.usingcustomprocessorandroid.rag.RagPipeline
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.AuthCompleteScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.MainScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.RagMainScreen
+import org.aesirlab.usingcustomprocessorandroid.ui.screens.RagServiceMainScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.StartAuthScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.UnfetchableWebIdScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.WebsocketConnectScreen
@@ -35,7 +36,8 @@ enum class Screens {
     UnfetchableWebIdScreen,
     StartAuthScreen,
     WebsocketConnectScreen,
-    RagMainScreen
+    RagMainScreen,
+    RagServiceMainScreen
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +61,7 @@ fun App() {
                     store.getWebId().first()
                 }
                 if (webId.isNotBlank()) {
-                    navController.navigate(route = Screens.RagMainScreen.name)
+                    navController.navigate(route = Screens.RagServiceMainScreen.name)
                 }
                 StartAuthScreen(
                     tokenStore = store,
@@ -89,7 +91,7 @@ fun App() {
                 deepLinks = listOf(navDeepLink { uriPattern = REDIRECT_URI })) {
 
                 AuthCompleteScreen(tokenStore = store) {
-                    navController.navigate(Screens.RagMainScreen.name)
+                    navController.navigate(Screens.RagServiceMainScreen.name)
                 }
             }
             composable(
@@ -121,6 +123,11 @@ fun App() {
                 val accessToken = runBlocking { store.getAccessToken().first() }
                 val signingJwk = runBlocking { store.getSigner().first() }
                 RagMainScreen(accessToken, signingJwk)
+            }
+            composable(route = Screens.RagServiceMainScreen.name) {
+                val accessToken = runBlocking { store.getAccessToken().first() }
+                val signingJwk = runBlocking { store.getSigner().first() }
+                RagServiceMainScreen(accessToken, signingJwk)
             }
         }
     }

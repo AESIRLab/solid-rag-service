@@ -38,6 +38,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -64,7 +65,7 @@ import org.aesirlab.usingcustomprocessorandroid.rag.ChatViewModel
 import org.aesirlab.usingcustomprocessorandroid.rag.MessageData
 import org.aesirlab.usingcustomprocessorandroid.rag.MessageOwner
 
-private val RESOURCE_URIS = arrayOf(
+val RESOURCE_URIS = arrayOf(
 //    "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appOne/sample_content_1.txt",
     "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appTwo/sample_content_2.txt",
 //    "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appThree/sample_content_3.txt"
@@ -121,10 +122,11 @@ fun RagMainScreen(
         }
     }
 
+    val messages by viewModel.allMessageData.collectAsState()
     Scaffold(
+
         floatingActionButton = {
             SaveToPodButton {
-                val messages = viewModel.messages.toList()
                 val userMessages = messages.map { md -> md.owner == MessageOwner.User }
                 val botMessages = messages.map { md -> md.owner == MessageOwner.Model }
                 val userMessagesString = userMessages.joinToString(separator = "<chunk_splitter>", prefix = "<chunk_splitter>")
@@ -177,8 +179,8 @@ fun RagMainScreen(
                 verticalArrangement = Arrangement.spacedBy(5.dp, alignment = Alignment.Bottom),
                 state = lazyColumnListState,
             ) {
-                composableScope.launch { lazyColumnListState.animateScrollToItem(viewModel.messages.size) }
-                items(items = viewModel.messages) { message -> MessageView(messageData = message) }
+                composableScope.launch { lazyColumnListState.animateScrollToItem(messages.size) }
+                items(items = messages) { message -> MessageView(messageData = message) }
             }
             StandardDivider()
             SendMessageView(calledFunc = { text ->

@@ -41,8 +41,11 @@ class RagPipeline(application: Application) {
             GEMMA_MODEL_PATH
         ).setPreferredBackend(LlmInference.Backend.GPU).setMaxTokens(1024).build()
     private val mediaPipeLanguageModelSessionOptions: LlmInferenceSession.LlmInferenceSessionOptions =
-        LlmInferenceSession.LlmInferenceSessionOptions.builder().setTemperature(1.0f)
-            .setTopP(0.95f).setTopK(64).build()
+        LlmInferenceSession.LlmInferenceSessionOptions.builder()
+            .setTemperature(1.0f)
+            .setTopP(0.95f)
+            .setTopK(16)
+            .build()
     private val mediaPipeLanguageModel: MediaPipeLlmBackend =
         MediaPipeLlmBackend(
             application.applicationContext, mediaPipeLanguageModelOptions,
@@ -62,12 +65,11 @@ class RagPipeline(application: Application) {
         )
     }
 
+    private val defaultSemanticTextMemory = DefaultSemanticTextMemory(SqliteVectorStore(768), embedder)
+
     private val config = ChainConfig.create(
         mediaPipeLanguageModel, PromptBuilder(PROMPT_TEMPLATE),
-        DefaultSemanticTextMemory(
-            // Gecko embedding model dimension is 768
-            SqliteVectorStore(768), embedder
-        )
+        defaultSemanticTextMemory
     )
     private val retrievalAndInferenceChain = RetrievalAndInferenceChain(config)
 

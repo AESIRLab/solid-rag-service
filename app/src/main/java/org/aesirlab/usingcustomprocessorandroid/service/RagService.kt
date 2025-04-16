@@ -10,6 +10,8 @@ import android.os.Message
 import android.os.Messenger
 import android.os.RemoteException
 import android.util.Log
+import com.google.ai.edge.localagents.rag.models.AsyncProgressListener
+import com.google.ai.edge.localagents.rag.models.LanguageModelResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -23,6 +25,7 @@ import java.util.concurrent.Executors
 private const val MSG_PROMPT = 1
 private const val MSG_RESPONSE = 2
 private const val MSG_MEMORIZE = 3
+private const val MSG_UP_RESPONSE = 4
 private const val TAG = "RAGService"
 class RagService: Service() {
     private lateinit var messenger: Messenger
@@ -50,6 +53,8 @@ class RagService: Service() {
 }
 
 private class QueryHandler(val ragPipeline: RagPipeline, val scope: CoroutineScope): Handler(Looper.getMainLooper()) {
+    private val queryIdsToMessenger = mutableMapOf<String, Messenger>()
+
     override fun handleMessage(msg: Message) {
         when (msg.what) {
             MSG_PROMPT -> {
@@ -58,7 +63,6 @@ private class QueryHandler(val ragPipeline: RagPipeline, val scope: CoroutineSco
                 val b = Bundle()
                 if (prompt != null) {
                     runBlocking {
-//                        val mutableResponse = ""
                         val totalResponse = ragPipeline.generateResponse(prompt) { _, _ ->
 //                            mutableResponse.plus(response)
                         }

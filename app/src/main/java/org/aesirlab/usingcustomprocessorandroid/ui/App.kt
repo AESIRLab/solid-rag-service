@@ -1,15 +1,21 @@
 package org.aesirlab.usingcustomprocessorandroid.ui
 
+import android.content.BroadcastReceiver
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -29,6 +35,10 @@ import org.aesirlab.usingcustomprocessorandroid.ui.screens.RagServiceMainScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.StartAuthScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.UnfetchableWebIdScreen
 import org.aesirlab.usingcustomprocessorandroid.ui.screens.WebsocketConnectScreen
+import org.unifiedpush.android.connector.UnifiedPush.getAckDistributor
+import org.unifiedpush.android.connector.UnifiedPush.registerApp
+import org.unifiedpush.android.connector.UnifiedPush.saveDistributor
+import org.unifiedpush.android.connector.UnifiedPush.unregisterApp
 
 enum class Screens {
     MainScreen,
@@ -39,7 +49,7 @@ enum class Screens {
     RagMainScreen,
     RagServiceMainScreen
 }
-
+private const val TAG = "App"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
@@ -47,6 +57,43 @@ fun App() {
     val applicationContext = LocalContext.current.applicationContext
     val coroutineScope = rememberCoroutineScope()
     val store = AuthTokenStore(applicationContext)
+
+    var registered = rememberSaveable {
+        false
+    }
+    var userDistrib = rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+    var internalReceiver: BroadcastReceiver? = null
+
+//    LifecycleEventEffect(event = Lifecycle.Event.ON_PAUSE) {
+//        Log.d(TAG, "ONPAUSE paused")
+//        Log.d(TAG, "ONPAUSE $registered")
+//        if (registered) {
+//            unregisterApp(applicationContext, instance = "test-instance")
+//        }
+//        internalReceiver?.let {
+//            applicationContext.unregisterReceiver(it)
+//        }
+//    }
+//
+//    LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
+//        if (!registered && applicationContext != null) {
+//            getAckDistributor(applicationContext)?.let {
+//                registerApp(applicationContext)
+//                return@LifecycleEventEffect
+//            }
+//
+//            if (userDistrib.value == null) {
+//                Toast.makeText(applicationContext, "nothing picked", Toast.LENGTH_SHORT).show()
+//            } else {
+//                saveDistributor(applicationContext, userDistrib.value!!)
+//                registerApp(applicationContext)
+//                registered.not()
+//            }
+//        }
+//
+//    }
 
     Scaffold { innerPadding ->
         val context = LocalContext.current

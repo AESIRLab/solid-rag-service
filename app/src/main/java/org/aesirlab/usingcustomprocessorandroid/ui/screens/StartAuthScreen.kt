@@ -27,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.openid.appauth.CodeVerifierUtil
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
 import okhttp3.Response
 import org.aesirlab.mylibrary.buildAuthorizationUrl
@@ -64,7 +65,7 @@ fun StartAuthScreen(
         val appTitle = "Android Item Tracker Solid"
 //        val appTitle = generateRandomString(24)
         var webId by rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf("https://ec2-18-119-19-244.us-east-2.compute.amazonaws.com/zach/profile/card#me")
         }
 
         Image(
@@ -103,9 +104,13 @@ fun StartAuthScreen(
                 }
                 val data = response.body!!.string()
                 val oidcProvider = getOidcProviderFromWebIdDoc(data)
-                tokenStore.setOidcProvider(oidcProvider)
+                val newOidcProvider = if (oidcProvider.endsWith("/")) {
+                    oidcProvider.dropLast(1)
+                } else {
+                    oidcProvider
+                }
 
-                val configRequest = buildConfigRequest(oidcProvider)
+                val configRequest = buildConfigRequest(newOidcProvider)
                 val configResponse = client.newCall(configRequest).execute()
                 // needs 4xx error checking
                 val responseBody = configResponse.body!!.string()
@@ -139,8 +144,20 @@ fun StartAuthScreen(
 
                 tokenStore.setCodeVerifier(codeVerifier)
 
+                val authUrl2 = Uri.parse(authUrl)
+                val newAuthUriBuilder = authUrl2.buildUpon().appendQueryParameter("response_type", "code")
+                    .appendQueryParameter("redirect_uri", redirectUris[0])
+                    .appendQueryParameter("scope", "offline_access openid webid")
+                    .appendQueryParameter("client_id", clientId)
+                    .appendQueryParameter("code_challenge_method", "S256")
+                    .appendQueryParameter("code_challenge", codeVerifierChallenge)
+                    .appendQueryParameter("prompt", "consent")
 
-                val authorizationUrl = buildAuthorizationUrl(authUrl, clientId, codeVerifierChallenge, redirectUris[0], clientSecret)
+                if (clientSecret != null) {
+                    newAuthUriBuilder.appendQueryParameter("client_secret", clientSecret)
+                }
+                val newAuthUri = newAuthUriBuilder.build()
+                val authorizationUrl = newAuthUri.toString().toHttpUrl()
                 val sendUri = Uri.parse(authorizationUrl.toString())
                 context.startActivity(Intent(Intent.ACTION_VIEW, sendUri))
             }

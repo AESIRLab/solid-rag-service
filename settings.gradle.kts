@@ -1,3 +1,5 @@
+import java.net.URI
+
 pluginManagement {
     plugins {
         kotlin("jvm") version "2.0.0"
@@ -13,6 +15,28 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+//        maven { url = "https://www.jitpack.io" }
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = URI("https://www.jitpack.io") }
+        gradlePluginPortal()
+        maven {
+            url = URI("https://repo1.maven.org/maven2/")
+        }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/aesirlab/annotations-repo")
+            credentials {
+                username = "zg009"
+                password = "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"
+            }
+        }
     }
 }
 

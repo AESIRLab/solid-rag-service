@@ -30,36 +30,6 @@ import java.util.Calendar
 import java.util.UUID
 
 private const val TAG = "ItemRemoteDataSource"
-private fun generateCustomToken(signingJwk: String, method: String, uri: String): String {
-    if (signingJwk == "") {
-        throw Error("no signing jwk found")
-    }
-    val jsonFromStringJWK = JSONObject(signingJwk)
-    val parsedKey = ECKey.parse(jsonFromStringJWK.toString(4))
-    val ecPublicJWK = parsedKey.toPublicJWK()
-    val signer = ECDSASigner(parsedKey)
-    val body = JWTClaimsSet.Builder().claim("htu", uri).claim("htm",
-        method).issueTime(Calendar.getInstance().time).jwtID(UUID.randomUUID().toString()).build()
-    val header =
-        JWSHeader.Builder(JWSAlgorithm.ES256).type(JOSEObjectType("dpop+jwt")).jwk(ecPublicJWK).build()
-    val signedJWT = SignedJWT(header, body)
-    signedJWT.sign(signer)
-    return signedJWT.serialize()
-}
-
-fun generateGetRequest(signingJwk: String, resourceUri: String, accessToken: String): Request =
-    Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken(signingJwk, "GET",
-        resourceUri)).addHeader("Authorization", "DPoP $accessToken").addHeader("Content-Type",
-        "text/turtle").addHeader("Link",
-        "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("GET", null).build()
-
-fun generatePutRequest(signingJwk: String, accessToken: String, resourceUri: String, rBody: RequestBody, contentType: String = "text/turtle"): Request {
-    return Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken(signingJwk, "PUT",
-        resourceUri)).addHeader("Authorization", "DPoP $accessToken").addHeader("content-type",
-        contentType).addHeader("Link",
-        "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("PUT", rBody).build()
-}
-
 class ItemRemoteDataSource(
     var webId: String? = null,
     var accessToken: String? = null,
@@ -159,7 +129,43 @@ class ItemRemoteDataSource(
             return latestListMutex.withLock { this.latestList }
         }
     }
-
-
-
 }
+
+
+private fun generateCustomToken(signingJwk: String, method: String, uri: String): String {
+    if (signingJwk == "") {
+        throw Error("no signing jwk found")
+    }
+    val jsonFromStringJWK = JSONObject(signingJwk)
+    val parsedKey = ECKey.parse(jsonFromStringJWK.toString(4))
+    val ecPublicJWK = parsedKey.toPublicJWK()
+    val signer = ECDSASigner(parsedKey)
+    val body = JWTClaimsSet.Builder().claim("htu", uri).claim("htm",
+        method).issueTime(Calendar.getInstance().time).jwtID(UUID.randomUUID().toString()).build()
+    val header =
+        JWSHeader.Builder(JWSAlgorithm.ES256).type(JOSEObjectType("dpop+jwt")).jwk(ecPublicJWK).build()
+    val signedJWT = SignedJWT(header, body)
+    signedJWT.sign(signer)
+    return signedJWT.serialize()
+}
+
+fun generateGetRequest(signingJwk: String, resourceUri: String, accessToken: String, contentType: String = "text/turtle"): Request =
+    Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken(signingJwk, "GET",
+        resourceUri)).addHeader("Authorization", "DPoP $accessToken").addHeader("Content-Type",
+        contentType).addHeader("Link",
+        "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("GET", null).build()
+
+fun generatePutRequest(signingJwk: String, accessToken: String, resourceUri: String, rBody: RequestBody, contentType: String = "text/turtle"): Request {
+    return Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken(signingJwk, "PUT",
+        resourceUri)).addHeader("Authorization", "DPoP $accessToken").addHeader("content-type",
+        contentType).addHeader("Link",
+        "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("PUT", rBody).build()
+}
+
+fun generatePostRequest(signingJwk: String, accessToken: String, resourceUri: String, rBody: RequestBody, contentType: String = "text/turtle"): Request {
+    return Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken(signingJwk, "POST",
+        resourceUri)).addHeader("Authorization", "DPoP $accessToken").addHeader("content-type",
+        contentType).addHeader("Link",
+        "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("PUT", rBody).build()
+}
+

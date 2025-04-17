@@ -8,23 +8,23 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-repositories {
-    google()
-    mavenCentral()
-    gradlePluginPortal()
-    // why did i need to add this manually in here but not the cycletracker?
-    maven {
-        url = URI("https://repo1.maven.org/maven2/")
-    }
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/aesirlab/annotations-repo")
-        credentials {
-            username = "zg009"
-            password = project.findProperty("gpr.key") as String? ?: System.getProperty("TOKEN")
-        }
-    }
-}
+//repositories {
+//    google()
+//    mavenCentral()
+//    gradlePluginPortal()
+//    // why did i need to add this manually in here but not the cycletracker?
+//    maven {
+//        url = URI("https://repo1.maven.org/maven2/")
+//    }
+//    maven {
+//        name = "GitHubPackages"
+//        url = uri("https://maven.pkg.github.com/aesirlab/annotations-repo")
+//        credentials {
+//            username = "zg009"
+//            password = project.findProperty("gpr.key") as String? ?: System.getProperty("TOKEN")
+//        }
+//    }
+//}
 
 android {
     namespace = "org.aesirlab.usingcustomprocessorandroid"
@@ -122,4 +122,7 @@ dependencies {
     // for await on listenablefuture
     implementation("com.google.guava:guava:33.3.1-android")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.9.0")
+
+    // unified push
+    implementation("com.github.UnifiedPush:android-connector:2.4.0")
 }

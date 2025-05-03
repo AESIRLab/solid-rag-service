@@ -1,5 +1,4 @@
 
-import java.net.URI
 
 plugins {
     alias(libs.plugins.android.application)
@@ -7,24 +6,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id("com.google.devtools.ksp")
 }
-
-//repositories {
-//    google()
-//    mavenCentral()
-//    gradlePluginPortal()
-//    // why did i need to add this manually in here but not the cycletracker?
-//    maven {
-//        url = URI("https://repo1.maven.org/maven2/")
-//    }
-//    maven {
-//        name = "GitHubPackages"
-//        url = uri("https://maven.pkg.github.com/aesirlab/annotations-repo")
-//        credentials {
-//            username = "zg009"
-//            password = project.findProperty("gpr.key") as String? ?: System.getProperty("TOKEN")
-//        }
-//    }
-//}
 
 android {
     namespace = "org.aesirlab.usingcustomprocessorandroid"
@@ -54,11 +35,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "19"
+        jvmTarget = "21"
     }
     buildFeatures {
         compose = true
@@ -69,6 +50,11 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
         }
     }
 }
@@ -125,4 +111,21 @@ dependencies {
 
     // unified push
     implementation("com.github.UnifiedPush:android-connector:2.4.0")
+
+    // Required -- JUnit 4 framework
+//    testImplementation("junit:junit:$jUnitVersion")
+//    val androidXTestVersion = "1.6.1"
+//    val mockitoVersion = "5.14.2"
+//    // Optional -- Robolectric environment
+//    testImplementation("androidx.test:core:$androidXTestVersion")
+////    // Optional -- Mockito framework
+//    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+////    // Optional -- mockito-kotlin
+//    val mockitoKotlinVersion = "3.2.0"
+//    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
+////    // Optional -- Mockk framework
+//    val mockkVersion = "1.13.17"
+//    testImplementation("io.mockk:mockk:$mockkVersion")
+//
+//    androidTestImplementation(libs.robolectric)
 }

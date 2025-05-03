@@ -2,7 +2,6 @@ package org.aesirlab.usingcustomprocessorandroid.rag
 
 
 import android.app.Application
-import android.content.Context
 import com.google.ai.edge.localagents.rag.chains.ChainConfig
 import com.google.ai.edge.localagents.rag.chains.RetrievalAndInferenceChain
 import com.google.ai.edge.localagents.rag.memory.DefaultSemanticTextMemory
@@ -28,10 +27,10 @@ import java.io.InputStreamReader
 import java.util.concurrent.Executors
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.guava.await
-import okhttp3.internal.immutableListOf
 import java.io.InputStream
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
+
 
 /** The RAG pipeline for LLM generation. */
 class RagPipeline(application: Application) {
@@ -93,9 +92,18 @@ class RagPipeline(application: Application) {
         config.semanticMemory.getOrNull()?.recordBatchedMemoryItems(ImmutableList.copyOf(listOf()))
     }
 
+    fun memorizeTextNativeChunker(text: String) {
+        val nativeChunker = TextChunker()
+        val chunkSize = 1024
+        val chunkOverlap = 128
+        val chunks = nativeChunker.chunk(text, chunkSize, chunkOverlap)
+        memorize(chunks)
+    }
+
     fun memorizeChunks(data: InputStream) {
         // BufferedReader is needed to read the *.txt file
         // Create and Initialize BufferedReader
+        
         val reader = BufferedReader(InputStreamReader(data))
 
         val sb = StringBuilder()
@@ -145,7 +153,7 @@ class RagPipeline(application: Application) {
     companion object {
         private const val COMPUTE_EMBEDDINGS_LOCALLY = true
         private const val USE_GPU_FOR_EMBEDDINGS = true
-        private const val CHUNK_SEPARATOR = "<chunk_splitter>"
+        private const val CHUNK_SEPARATOR = "<ch_s>"
 
         private const val GEMMA_MODEL_PATH = "/data/local/tmp/gemma3-1b-it-int4.task"
         private const val TOKENIZER_MODEL_PATH = "/data/local/tmp/sentencepiece.model"

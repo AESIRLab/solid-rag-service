@@ -1,80 +1,40 @@
-What role did Lyell's Geological Evidences play in popularizing prehistory, and how did it influence Darwin's view of evolution?
-<ch_s>
-According to Darwin's observations, what was a key observation he made regarding the origin of species?
-<ch_s>
-According to the text, the location of the abbey had an island in the Thames called Thorney Island. How long did the monks live there?
-<ch_s>
-How did Huxley's work influence the scientific community's acceptance of evolution?
-<ch_s>
-What was the primary focus of Darwin's research on barnacles, as indicated by the text?
-<ch_s>
-What were the primary reasons for Darwin’s dissatisfaction with the traditional views on species, and how did these concerns ultimately lead him to formulate his theory of natural selection?
-<ch_s>
-The abbey’s nave and transepts have sixteen crystal chandeliers made of hand-blown Waterford glass. These chandeliers were donated by the Guinness family in 1965 and are said to be designed by A. B. Read and Stephen Dykes Bower. What is the significance of this donation to the abbey's history?
-<ch_s>
-How did the scientific community view Darwin's theory of evolution at the time of his work?
-<ch_s>
-According to Darwin, how does a population’s growth influence its chances of survival and reproduction?
-<ch_s>
-How did John Gould contribute to Darwin's understanding of species variation among the Galápagos birds, and what was the impact on Darwin's theory?
-<ch_s>
-What was the original purpose of the monastery on the site before the 11th century?
-<ch_s>
-What was the significance of Thomas Huxley's response during the 1860 Oxford evolution debate, and how did it symbolize the relationship between science and religion at that time?
-<ch_s>
-According to the text, how did FitzRoy's Narrative influence Darwin's initial views on the systematics of the taxa?
-<ch_s>
+What was the primary reason for the proposed building of a corona?
 What was the primary impetus behind Darwin's intense study of transmutation, as highlighted in the passage?
-<ch_s>
-What was the primary reason for the delays in the abbey's construction and why did it impact Richard's plans?
-<ch_s>
-What specific geological information did Darwin gather during his trip, beyond the standard coastline surveys?
-<ch_s>
-What is the primary concept that Darwin is exploring in his work on population and the struggle for existence, as described by Malthus?
-<ch_s>
-What significant event marked the beginning of the English Reformation, and how did it affect Westminster Abbey's status and income?
-<ch_s>
-What architectural features are notable in the Henry VII Lady Chapel, and what do they signify?
-<ch_s>
-The Henry VII Lady Chapel is notable for its decoration, particularly the 95 statues of saints.  What is a significant detail about the ceiling's design?
-<ch_s>
-Which of the following best describes the reason for the proposed corona construction?
-<ch_s>
-How is the Henry VII Lady Chapel described as influenced by John Leland, and what does this suggest about its purpose?
-<ch_s>
+Which of the following best describes the central idea of Darwin's theory of evolution?
 According to Darwin's observations and notes, what was the primary purpose of the Beagle voyage?
-<ch_s>
+According to Darwin's observations, what was a key observation he made regarding the origin of species?
+How did Richard II's donations contribute to the completion of the Gothic church?
 How did Herbert Spencer's ideas in "Social Statics" relate to evolutionary theory, and what was his stance on human freedom and individual liberties?
-<ch_s>
-What was the initial purpose of the dissolution of the Westminster Abbey?
-<ch_s>
+According to the text, the location of the abbey had an island in the Thames called Thorney Island. How long did the monks live there?
 What specific type of biological investigation did Darwin initially focus on, and what was his primary motivation for this research?
-<ch_s>
-Which of the following accurately describes the purpose of the Cosmati pavement?
-<ch_s>
-What is the primary function of the Westminster Abbey choir, and how has its role evolved over time?
-<ch_s>
-How did Robert Darwin's family's beliefs about evolution influence his family's perspective on the natural world?
-<ch_s>
 Why was the abbey's unfinished state a significant factor in the Peasants' Revolt of 1381, and what was the significance of the chantry chapel's location?
-<ch_s>
-What evidence did Darwin find in the Galápagos Islands that suggested wildlife was connected to an older "centre of creation," and how did this observation impact his views on species variation?
-<ch_s>
-How did Darwin's work and the pressure surrounding it affect his health and well-being?
-<ch_s>
-What was the overall impact of Darwin's theory of natural selection on the scientific community and the world as a whole, as evidenced by the provided context?
-<ch_s>
-According to Darwin, what was the primary focus of the book's interest surrounding its publication?
-<ch_s>
-How did the construction of the abbey and the initial building work experience the peaks and valleys of Richard II's reign?
-<ch_s>
-The document details the history of stained glass at Westminster Abbey.  Besides the typical replacement of clear glass, what specific type of glass was utilized in the 19th century, and what was the significance of this change?
-<ch_s>
-What is the primary motivation for Darwin's work, according to the provided text?
-<ch_s>
-What is the significance of the coronation chair (the throne on which English and British sovereigns are seated when they are crowned)?
-<ch_s>
-What was Darwin's proposed explanation for the origin of life, and how did it differ from Newton's initial ideas?
-<ch_s>
+What role did Lyell's Geological Evidences play in popularizing prehistory, and how did it influence Darwin's view of evolution?
+What is Darwin’s primary view on social and political issues reflected in his time and social position?
+What was the primary purpose of Edward the Confessor's abbey, and what significance did it hold in the context of his reign?
+What is the primary concept that Darwin is exploring in his work on population and the struggle for existence, as described by Malthus?
+How did Darwin’s parents influence his life and choices?
+What significant event marked the beginning of the English Reformation, and how did it affect Westminster Abbey's status and income?
+What was Darwin's initial proposal for the origin of life, based on the text?
 What is the primary function of the south transept?
-<ch_s>
+What is the significance of the coronation chair (the throne on which English and British sovereigns are seated when they are crowned)?
+What was Darwin's proposed explanation for the origin of life, and how did it differ from Newton's initial ideas?
+What were the primary reasons for Darwin’s dissatisfaction with the traditional views on species, and how did these concerns ultimately lead him to formulate his theory of natural selection?
+According to Darwin, what was the primary focus of the book's interest surrounding its publication?
+How did the scientific community view Darwin's theory of evolution at the time of his work?
+What was the initial purpose of the dissolution of the Westminster Abbey?
+What was the original purpose of the monastery on the site before the 11th century?
+What is the primary function of the Westminster Abbey choir, and how has its role evolved over time?
+How did Darwin's work and the pressure surrounding it affect his health and well-being?
+Which of the following best describes the role of Darwin's name in the history of scientific recognition?
+Which of the following best describes the reason for the proposed corona construction?
+How did the abbey's name derive from the medieval ceremony for appointing a knight, and what was the significance of the bathing element?
+According to Darwin, how does a population’s growth influence its chances of survival and reproduction?
+What measures were taken to protect Westminster Abbey's artifacts during World War II, and what was one lasting impact of the bombing raids on the abbey?
+What was the original purpose of the elaborate medieval ceremony associated with the founding of the Most Honourable Order of the Bath, and how often are installation ceremonies held at the abbey?
+The Henry VII Lady Chapel is notable for its decoration, particularly the 95 statues of saints.  What is a significant detail about the ceiling's design?
+What was Darwin's primary interest in early life and education, and how did it influence his intellectual development?
+What was the significance of Thomas Huxley's response during the 1860 Oxford evolution debate, and how did it symbolize the relationship between science and religion at that time?
+The document details the history of stained glass at Westminster Abbey.  Besides the typical replacement of clear glass, what specific type of glass was utilized in the 19th century, and what was the significance of this change?
+What was Darwin's primary motivation for joining the Plinian Society, and how did it shape his intellectual development?
+What specific geological information did Darwin gather during his trip, beyond the standard coastline surveys?
+What type of architectural style was the abbey built in?

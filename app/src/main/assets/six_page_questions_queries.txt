@@ -1,0 +1,80 @@
+What professions is John Stevens Henslow best known for, and who did he mentor?
+<ch_s>
+How many partner institutions are associated with the university's exchange programmes?
+<ch_s>
+What was the primary reason for the unfinished state of the church when Richard II first arrived?
+<ch_s>
+What are the main functions of Westminster Abbey, as highlighted in the provided text?
+<ch_s>
+How did Darwin's voyage on HMS Beagle influence his development of his theory of natural selection?
+<ch_s>
+Considering the bibliography provided, how does "Whatever is Under the Earth: The Geological Society of London 1807 to 2007" contribute to our understanding of the Society's history and impact over two centuries?
+<ch_s>
+What is the central theme or argument of Darwin's research concerning human population growth and its potential consequences, as presented in his writings?
+<ch_s>
+What was the main occupation of John Stevens Henslow?
+<ch_s>
+How does Darwin compare the population dynamics described in Malthus's An Essay on the Principle of Population to his own ideas about species struggle and the formation of new organisms?
+<ch_s>
+Which colleges at Edinburgh University offer university-wide exchange programs for most undergraduate students, and which college's students are generally not eligible?
+<ch_s>
+What is the primary purpose of Henslow’s work in Hitcham?
+<ch_s>
+What is the primary source of information regarding Darwin's theory of evolution?
+<ch_s>
+What is the primary reason for Charles Darwin's intense interest in evolution during the 1870s, as highlighted in the text?
+<ch_s>
+How did Darwin’s research with barnacles, particularly Mr. Arthrobalanus, contribute to the development of his theory of natural selection?
+<ch_s>
+What is the name of the library system at the university?
+<ch_s>
+What was the major cleaning and restoration program carried out on the Cosmati pavement?
+<ch_s>
+What is the historical significance of the Edinburgh University Students' Association (EUSA)?
+<ch_s>
+How did the pressures of the Victorian era influence Darwin's work and his well-being?
+<ch_s>
+How did changes in architectural style and political circumstances influence the development and features of Westminster Abbey from the 14th to the 16th century?
+<ch_s>
+How did John Leland’s description of the chapel influence the design of the chapel?
+<ch_s>
+What is the primary function of the Senate Academicus and who is generally responsible for its leadership?
+<ch_s>
+Based on the provided text, what is the significance of the lantern tower's current state?
+<ch_s>
+How many years did it take to finish the church after the donation of funds?
+<ch_s>
+What are the different types of medals awarded by the Society, and how do their values differ based on the specific context within the documents?
+<ch_s>
+How did the establishment of the Royal Society of Edinburgh in 1783 contribute to the development of scientific institutions like Edinburgh University?
+<ch_s>
+- 3. What was the primary purpose of Charles Darwin's letter to Emma?
+<ch_s>
+According to Darwin, what was the primary objective of the voyage on HMS Beagle?
+<ch_s>
+What was the purpose of the BioQuarter project?
+<ch_s>
+What is the primary purpose of the abbey, as described in the document?
+<ch_s>
+What was the primary influence on Darwin's early life and education?
+<ch_s>
+What details describe the appearance of the interior of the abbey, focusing on the coloration and decoration?
+<ch_s>
+Based on the provided historical links, what types of institutions were founded by alumni of Edinburgh medical schools, and why were they established?
+<ch_s>
+How did Henslow's mentorship of Charles Darwin impact Darwin's scientific development and the direction of his research?
+<ch_s>
+Can you generate three questions based on the following context information?
+<ch_s>
+Which of the following statements best describes the university's relationship with the surrounding area and its international collaborations?
+<ch_s>
+What was the primary reason for the proposed construction of a corona around the lantern?
+<ch_s>
+How do the funds administered by the Geological Society relate to its mission or activities, based on the names of the funds listed in the document?
+<ch_s>
+What was the significance of the South Bridge Act of 1785 in relation to the university's physical location and its historical connections?
+<ch_s>
+- 1. The Wedgwood family relocated to Down House after what event?
+<ch_s>
+What was John Stevens Henslow’s primary area of interest during his career, and how did his early interests align with his later career path?
+<ch_s>

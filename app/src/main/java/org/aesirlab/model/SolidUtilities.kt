@@ -25,7 +25,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.aesirlab.usingcustomprocessorandroid.model.AuthTokenStore
+import org.aesirlab.solidragapp.model.AuthTokenStore
 import org.aesirlab.model.Utilities.Companion.ABSOLUTE_URI
 import org.json.JSONObject
 import java.util.Locale

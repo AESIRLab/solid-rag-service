@@ -83,12 +83,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    ksp("com.squareup:kotlinpoet:1.14.0")
-    ksp("com.squareup:kotlinpoet-ksp:1.12.0")
+//    ksp("com.squareup:kotlinpoet:1.14.0")
+//    ksp("com.squareup:kotlinpoet-ksp:1.12.0")
 
-    implementation("org.aesirlab:sksolidannotations:$version")
-    ksp("org.aesirlab:skannotationscompiler:$version")
-    implementation("org.aesirlab:authlib:$version")
+//    implementation("org.aesirlab:sksolidannotations:$version")
+//    ksp("org.aesirlab:skannotationscompiler:$version")
+//    implementation("org.aesirlab:authlib:$version")
 
     // do not turn these to lib toml
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

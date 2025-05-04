@@ -63,7 +63,7 @@ fun StartAuthScreen(
         val appTitle = "Solid Rag App"
 //        val appTitle = generateRandomString(24)
         var webId by rememberSaveable {
-            mutableStateOf("") // "https://ec2-18-119-19-244.us-east-2.compute.amazonaws.com/zach/profile/card#me"
+            mutableStateOf("https://ec2-18-119-19-244.us-east-2.compute.amazonaws.com/zach/profile/card#me") // "https://ec2-18-119-19-244.us-east-2.compute.amazonaws.com/zach/profile/card#me"
         }
 
         Image(

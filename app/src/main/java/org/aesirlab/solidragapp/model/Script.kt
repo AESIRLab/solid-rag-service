@@ -239,9 +239,12 @@ fun createUnsafeOkHttpClient(): OkHttpClient {
         .hostnameVerifier { _, _ -> true }.build()
 }
 
-
 private fun generateCustomToken(method: String, uri: String, signingJwk: String): String {
-    val parsedKey = ECKey.parse(JWK.parse(signingJwk).toJSONObject())
+    if (signingJwk == "") {
+        throw Error("no signing jwk found")
+    }
+    val jsonFromStringJWK = JSONObject(signingJwk)
+    val parsedKey = ECKey.parse(jsonFromStringJWK.toString(4))
     val ecPublicJWK = parsedKey.toPublicJWK()
     val signer = ECDSASigner(parsedKey)
     val body = JWTClaimsSet.Builder().claim("htu", uri).claim("htm",
@@ -252,6 +255,19 @@ private fun generateCustomToken(method: String, uri: String, signingJwk: String)
     signedJWT.sign(signer)
     return signedJWT.serialize()
 }
+
+//private fun generateCustomToken(method: String, uri: String, signingJwk: String): String {
+//    val parsedKey = ECKey.parse(JWK.parse(signingJwk).toJSONObject())
+//    val ecPublicJWK = parsedKey.toPublicJWK()
+//    val signer = ECDSASigner(parsedKey)
+//    val body = JWTClaimsSet.Builder().claim("htu", uri).claim("htm",
+//        method).issueTime(Calendar.getInstance().time).jwtID(randomUUID().toString()).build()
+//    val header =
+//        JWSHeader.Builder(JWSAlgorithm.ES256).type(JOSEObjectType("dpop+jwt")).jwk(ecPublicJWK).build()
+//    val signedJWT = SignedJWT(header, body)
+//    signedJWT.sign(signer)
+//    return signedJWT.serialize()
+//}
 
 fun generateGetRequest(resourceUri: String, accessToken: String, signingJwk: String): Request =
     Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken("GET",

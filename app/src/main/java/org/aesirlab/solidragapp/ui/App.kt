@@ -3,6 +3,7 @@ package org.aesirlab.solidragapp.ui
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -89,6 +90,7 @@ fun App() {
             composable(route = Screens.RagServiceMainScreen.name) {
                 val accessToken = runBlocking { store.getAccessToken().first() }
                 val signingJwk = runBlocking { store.getSigner().first() }
+                Log.d(TAG, signingJwk)
                 RagServiceMainScreen(accessToken, signingJwk)
             }
         }

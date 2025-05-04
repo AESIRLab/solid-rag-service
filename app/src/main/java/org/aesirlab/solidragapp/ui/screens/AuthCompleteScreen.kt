@@ -67,5 +67,6 @@ fun AuthCompleteScreen(
             tokensHashMap["refresh_token"]?.let { setRefreshToken(it) }
         }
     }
+    Log.d(TAG, ecKey.toJSONObject().toString())
     onFinishedAuth()
 }

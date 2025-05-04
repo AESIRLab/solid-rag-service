@@ -43,7 +43,7 @@
                 <data
                     android:host="app"
                     android:pathPrefix="/callback"
-                    android:scheme="org.aesirlab.customprocessor"
+                    android:scheme="org.aesirlab.solidragapp"
                     />
             </intent-filter>
         </activity>

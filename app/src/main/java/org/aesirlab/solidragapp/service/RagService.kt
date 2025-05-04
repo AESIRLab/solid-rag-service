@@ -24,9 +24,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.aesirlab.model.generatePutRequest
 import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
+import org.aesirlab.solidragapp.model.generatePutRequest
 import org.aesirlab.solidragapp.rag.RagPipeline
+import org.aesirlab.solidragapp.ui.SAVE_RESOURCE_POD_URI
 import org.aesirlab.solidragapp.ui.SolidMobileItemApplication
 import org.json.JSONObject
 import java.util.concurrent.Executors
@@ -135,14 +136,20 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, v
                 jsonBody.put("query", prompt)
                 jsonBody.put("query_id", queryId)
                 val rBody = jsonBody.toString().toRequestBody("application/json".toMediaType())
-                val resourceUri = "https://ec2-18-119-19-244.us-east-2.compute.amazonaws.com/zach/profile/test$queryId.json"
+                val resourceUri = "${SAVE_RESOURCE_POD_URI}test$queryId.json"
                 if (prompt == null) {
                     b.putString("response", "you must provide a 'prompt' extra in your message")
                 } else {
                     runBlocking {
                         withContext(Dispatchers.IO) {
 
-                            val request = generatePutRequest(signingJwk!!, accessToken!!, resourceUri, rBody)
+                            val request = generatePutRequest(
+                                signingJwk = signingJwk!!,
+                                accessToken = accessToken!!,
+                                resourceUri = resourceUri,
+                                rBody = rBody,
+                                contentType = "application/json"
+                            )
                             val response = client.newCall(request).execute()
                             Log.d(TAG, response.code.toString())
                             Log.d(TAG, response.body!!.string())

@@ -3,9 +3,14 @@ package org.aesirlab.solidragapp.ui
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import org.aesirlab.model.ItemDatabase
-import org.aesirlab.model.ItemRepository
 
+val SAVE_RESOURCE_POD_URI = "https://ec2-18-119-19-244.us-east-2.compute.amazonaws.com/zach/profile/"
+val RESOURCE_URIS = arrayOf(
+    "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appOne/sample_content_1.txt",
+//    "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appTwo/sample_content_2.txt",
+//    "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appThree/sample_content_3.txt"
+)
+val SAVED_CHAT_URI_BASE = "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/savedChats/"
 class SolidMobileItemApplication: Application() {
     init {
         appInstance = this
@@ -13,12 +18,7 @@ class SolidMobileItemApplication: Application() {
 
     companion object {
         lateinit var appInstance: SolidMobileItemApplication
-        const val BASE_URL = "http://solidragapp.aesirlab.io"
     }
-
-
-    private val database by lazy { ItemDatabase.getDatabase(appInstance, BASE_URL) }
-    val repository by lazy { ItemRepository(database.ItemDao(), ) }
 }
 
 fun Context.broadcastMessageInfo(

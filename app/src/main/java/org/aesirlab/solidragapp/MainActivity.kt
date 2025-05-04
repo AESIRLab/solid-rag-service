@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import org.aesirlab.solidragapp.ui.App
 import org.aesirlab.solidragapp.ui.theme.UsingCustomProcessorAndroidTheme
-const val REDIRECT_URI = "org.aesirlab.customprocessor://app/callback"
+const val REDIRECT_URI = "org.aesirlab.solidragapp://app/callback"
 
 
 class MainActivity : ComponentActivity() {

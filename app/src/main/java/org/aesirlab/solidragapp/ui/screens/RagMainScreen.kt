@@ -57,19 +57,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.aesirlab.model.generateGetRequest
-import org.aesirlab.model.generatePutRequest
 import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
+import org.aesirlab.solidragapp.model.generateGetRequest
+import org.aesirlab.solidragapp.model.generatePutRequest
 import org.aesirlab.solidragapp.rag.ChatViewModel
 import org.aesirlab.solidragapp.rag.MessageData
 import org.aesirlab.solidragapp.rag.MessageOwner
+import org.aesirlab.solidragapp.ui.RESOURCE_URIS
+import org.aesirlab.solidragapp.ui.SAVED_CHAT_URI_BASE
+import kotlin.math.sign
 
-val RESOURCE_URIS = arrayOf(
-//    "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appOne/sample_content_1.txt",
-    "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appTwo/sample_content_2.txt",
-//    "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appThree/sample_content_3.txt"
-)
-private val SAVED_CHAT_URI_BASE = "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/savedChats/"
+
 private const val TAG = "RagMainScreen"
 
 @Composable
@@ -105,7 +103,7 @@ fun RagMainScreen(
     )
 
     LaunchedEffect(key1 = Unit) {
-        val requests = RESOURCE_URIS.map { generateGetRequest(signingJwk, it, accessToken) }
+        val requests = RESOURCE_URIS.map { generateGetRequest(signingJwk =  signingJwk, resourceUri = it,  accessToken = accessToken) }
 
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
@@ -130,7 +128,12 @@ fun RagMainScreen(
                 val botMessages = messages.map { md -> md.owner == MessageOwner.Model }
                 val userMessagesString = userMessages.joinToString(separator = "<chunk_splitter>", prefix = "<chunk_splitter>")
                 val rBody = userMessagesString.toByteArray().toRequestBody(null, 0, userMessagesString.toByteArray().size)
-                val putRequest = generatePutRequest(signingJwk, accessToken, "$SAVED_CHAT_URI_BASE${System.currentTimeMillis()}.txt", rBody, "text/plain")
+                val putRequest = generatePutRequest(
+                    signingJwk = signingJwk,
+                    accessToken = accessToken,
+                    resourceUri = "$SAVED_CHAT_URI_BASE${System.currentTimeMillis()}.txt",
+                    rBody = rBody,
+                    contentType = "text/plain")
                 val call = client.newCall(putRequest)
                 viewModel.resetState()
                 coroutineScope.launch {

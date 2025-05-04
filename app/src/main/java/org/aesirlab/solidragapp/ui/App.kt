@@ -25,13 +25,11 @@ import org.aesirlab.solidragapp.ui.screens.AuthCompleteScreen
 import org.aesirlab.solidragapp.ui.screens.RagServiceMainScreen
 import org.aesirlab.solidragapp.ui.screens.StartAuthScreen
 import org.aesirlab.solidragapp.ui.screens.UnfetchableWebIdScreen
-import org.aesirlab.solidragapp.ui.screens.WebsocketConnectScreen
 
 enum class Screens {
     AuthCompleteScreen,
     UnfetchableWebIdScreen,
     StartAuthScreen,
-    WebsocketConnectScreen,
     RagServiceMainScreen
 }
 private const val TAG = "App"
@@ -87,11 +85,6 @@ fun App() {
                 AuthCompleteScreen(tokenStore = store) {
                     navController.navigate(Screens.RagServiceMainScreen.name)
                 }
-            }
-            composable(
-                route = Screens.WebsocketConnectScreen.name
-            ) {
-                WebsocketConnectScreen()
             }
             composable(route = Screens.RagServiceMainScreen.name) {
                 val accessToken = runBlocking { store.getAccessToken().first() }

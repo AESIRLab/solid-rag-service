@@ -67,7 +67,7 @@ class RagService: Service() {
 private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, val scope: CoroutineScope): Handler(Looper.getMainLooper()) {
     // this is a map of the query ids based on the messenger which sent a query
     // this is to receive responses from unifiedpush and dispatch them properly
-    private var queryIdCounter = 270
+    private var queryIdCounter = 1100
     private val queryIdCounterLock = Mutex()
     private val queryIdsToMessenger = mutableMapOf<Int, Messenger>()
     private val checkReceiver = object : BroadcastReceiver() {
@@ -80,7 +80,16 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, v
                     val b = Bundle()
                     // add the generated response from the bundle
                     val generatedText = intent.getStringExtra("response")!!
+                    val appSentTime = intent.getLongExtra("appSentTime", -1)
+                    val upSentTime = intent.getLongExtra("upSentTime", -1)
+                    val podReceivedTime = intent.getLongExtra("podReceivedTime", -1)
+                    val upReceivedTime = intent.getLongExtra("upReceivedTime", -1)
+                    Log.d(TAG, "MESSAGE FROM BROADCAST CONTAINED $generatedText, $appSentTime, $upSentTime, $podReceivedTime, $upReceivedTime")
                     b.putString("response", generatedText)
+                    b.putLong("appSentTime", appSentTime)
+                    b.putLong("upSentTime", upSentTime)
+                    b.putLong("podReceivedTime", podReceivedTime)
+                    b.putLong("upReceivedTime", upReceivedTime)
                     newMessage.data = b
                     // get the query id
                     val queryId = intent.getIntExtra("queryId", -1)
@@ -130,11 +139,13 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, v
                 // get the tokens for generating the put request
                 val accessToken = msg.data.getString("accessToken")
                 val signingJwk = msg.data.getString("signingJwk")
+                val appSentTime = msg.data.getLong("appSentTime")
                 val b = Bundle()
                 val client = createUnsafeOkHttpClient()
                 val jsonBody = JSONObject()
                 jsonBody.put("query", prompt)
                 jsonBody.put("query_id", queryId)
+                jsonBody.put("app_sent_time", appSentTime)
                 val rBody = jsonBody.toString().toRequestBody("application/json".toMediaType())
                 val resourceUri = "${SAVE_RESOURCE_POD_URI}test$queryId.json"
                 if (prompt == null) {
@@ -142,7 +153,6 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, v
                 } else {
                     runBlocking {
                         withContext(Dispatchers.IO) {
-
                             val request = generatePutRequest(
                                 signingJwk = signingJwk!!,
                                 accessToken = accessToken!!,

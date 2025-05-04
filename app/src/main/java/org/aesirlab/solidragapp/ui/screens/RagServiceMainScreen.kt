@@ -53,6 +53,7 @@ import org.unifiedpush.android.connector.UnifiedPush.getDistributors
 import org.unifiedpush.android.connector.UnifiedPush.registerApp
 import org.unifiedpush.android.connector.UnifiedPush.saveDistributor
 import org.unifiedpush.android.connector.UnifiedPush.unregisterApp
+import java.io.OutputStreamWriter
 
 private const val TAG = "RagServiceMainScreen"
 @Composable
@@ -60,6 +61,15 @@ fun RagServiceMainScreen(
     accessToken: String,
     signingJwk: String
 ) {
+    val appCtx = LocalContext.current.applicationContext
+    val outputStreamWriter = remember {
+        OutputStreamWriter(
+            appCtx.openFileOutput(
+                "round_trip_times.csv",
+                Context.MODE_PRIVATE
+            )
+        )
+    }
     val mBound = remember {
         mutableStateOf(false)
     }
@@ -89,7 +99,17 @@ fun RagServiceMainScreen(
             when (msg.what) {
                 2 -> {
                     val responseFromRag = msg.data.getString("response")
+                    val appSentTime = msg.data.getLong("appSentTime")
+                    val podReceivedTime = msg.data.getLong("podReceivedTime")
+                    val upSentTime = msg.data.getLong("upSentTime")
+                    val upReceivedTime = msg.data.getLong("upReceivedTime")
                     Log.d(TAG, responseFromRag!!)
+                    if (responseFromRag == "close") {
+                        outputStreamWriter.close()
+                    } else {
+                        Log.d(TAG, "$appSentTime||$podReceivedTime||$upSentTime$upReceivedTime||${System.currentTimeMillis()}||")
+                        outputStreamWriter.write("$appSentTime||$podReceivedTime||$upSentTime$upReceivedTime||${System.currentTimeMillis()}||\n")
+                    }
                     viewModel.appendMessage(MessageOwner.Model, responseFromRag)
                 }
             }
@@ -98,9 +118,6 @@ fun RagServiceMainScreen(
     val receiveMessenger = Messenger(mHandler)
 
     val composableScope = rememberCoroutineScope()
-    val appCtx = LocalContext.current.applicationContext
-//    val coroutineScope = rememberCoroutineScope()
-//    val client = createUnsafeOkHttpClient()
 
     val prompt = rememberSaveable {
         mutableStateOf("")
@@ -216,6 +233,7 @@ fun RagServiceMainScreen(
                                         b.putString("accessToken", accessToken)
                                         b.putString("signingJwk", signingJwk)
                                         b.putString("prompt", prompt.value)
+                                        b.putLong("appSentTime", System.currentTimeMillis())
                                         newMessage.data = b
                                         newMessage.replyTo = receiveMessenger
                                         mService!!.send(newMessage)

@@ -17,7 +17,8 @@ class UPQueryReceiver : MessagingReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        Log.d(TAG, "onReceive")
+//        Log.d(TAG, intent.data.toString())
+//        Log.d(TAG, "onReceive")
     }
 
     override fun onRegistrationFailed(context: Context, instance: String) {
@@ -39,9 +40,13 @@ class UPQueryReceiver : MessagingReceiver() {
         val jsonMessage = JSONObject(msg)
         val queryId = jsonMessage.getInt("query_id")
         val generatedText = jsonMessage.getString("generated_text")
-        Log.d(TAG, "message: ${message.toString(Charsets.UTF_8)}")
+        val appSentTime = jsonMessage.getLong("app_sent_time")
+        val upSentTime = jsonMessage.getLong("up_sent_time")
+        val podReceivedTime = jsonMessage.getLong("pod_received_time")
+        val upReceivedTime = System.currentTimeMillis()
+        Log.d(TAG, "$queryId, $generatedText, $appSentTime, $upSentTime, $podReceivedTime, $upReceivedTime")
 
-        context.broadcastMessageInfo(queryId, generatedText)
+        context.broadcastMessageInfo(queryId, generatedText, appSentTime, upSentTime, podReceivedTime, upReceivedTime)
     }
 
     override fun onNewEndpoint(context: Context, endpoint: String, instance: String) {

@@ -23,12 +23,20 @@ class SolidMobileItemApplication: Application() {
 
 fun Context.broadcastMessageInfo(
     queryId: Int,
-    response: String
+    response: String,
+    appSentTime: Long,
+    upSentTime: Long,
+    podReceivedTime: Long,
+    upReceivedTime: Long
 ) {
     val broadcastIntent = Intent()
     broadcastIntent.`package` = this.packageName
     broadcastIntent.action = "MESSAGE"
     broadcastIntent.putExtra("queryId", queryId)
     broadcastIntent.putExtra("response", response)
+    broadcastIntent.putExtra("appSentTime", appSentTime)
+    broadcastIntent.putExtra("upSentTime", upSentTime)
+    broadcastIntent.putExtra("podReceivedTime", podReceivedTime)
+    broadcastIntent.putExtra("upReceivedTime", upReceivedTime)
     this.sendBroadcast(broadcastIntent)
 }

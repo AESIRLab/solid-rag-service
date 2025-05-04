@@ -25,14 +25,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.openid.appauth.CodeVerifierUtil
-import org.aesirlab.mylibrary.buildAuthorizationUrl
-import org.aesirlab.mylibrary.buildConfigRequest
-import org.aesirlab.mylibrary.buildRegistrationJSONBody
-import org.aesirlab.mylibrary.buildRegistrationRequest
-import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
 import org.aesirlab.solidragapp.R
 import org.aesirlab.solidragapp.REDIRECT_URI
 import org.aesirlab.solidragapp.model.AuthTokenStore
+import org.aesirlab.solidragapp.model.buildAuthorizationUrl
+import org.aesirlab.solidragapp.model.buildConfigRequest
+import org.aesirlab.solidragapp.model.buildRegistrationJSONBody
+import org.aesirlab.solidragapp.model.buildRegistrationRequest
+import org.aesirlab.solidragapp.model.createUnsafeOkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
 

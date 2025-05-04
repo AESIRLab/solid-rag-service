@@ -24,7 +24,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
+import org.aesirlab.solidragapp.model.createUnsafeOkHttpClient
 import org.aesirlab.solidragapp.model.generatePutRequest
 import org.aesirlab.solidragapp.rag.RagPipeline
 import org.aesirlab.solidragapp.ui.SAVE_RESOURCE_POD_URI

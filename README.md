@@ -1,7 +1,7 @@
 #### IMPORTANT INFORMATION ####
-This application currently will not run due to the use of a research-based library
-being used as an internal private package. If you are interested in running the example
-application or seeing a demonstration, please reach out to (the library creator)[zg009@uark.edu].
+This application is a prototype, and no security or performance guarantees are provided. 
+If you are experiencing an issue running the application, please do not hesitate to raise an issue
+on the Github.
 
 ### Instructions ###
 To use this application, you first need to install the models from the
@@ -9,8 +9,8 @@ Google AI Edge RAG tutorial https://ai.google.dev/edge/mediapipe/solutions/genai
 
 You must load these into the corresponding folders in your device or emulator using adb
 
-You also need to install the (ntfy.sh)[https://play.google.com/store/apps/details?id=io.heckel.ntfy] 
-app in order to use the (UnifiedPush protocol)[https://unifiedpush.org/] which allows communication from the user's Solid pod
+You also need to install the [ntfy.sh](https://play.google.com/store/apps/details?id=io.heckel.ntfy) 
+app in order to use the [UnifiedPush protocol](https://unifiedpush.org/) which allows communication from the user's Solid pod
 to the application on the phone, and the broadcast receiver which runs in the RAG service app and correctly
 routes queries to the calling app.
 
@@ -30,4 +30,5 @@ is unavailable, the query is delegated to the user's on-device RAG model.
 
 ## Branches ##
 ```main``` - This includes the code for the RAG service and application which users can use.
+
 ```evaluate-rag-service``` - This is used to evaluate the queries and record the responses from the Gemma models.

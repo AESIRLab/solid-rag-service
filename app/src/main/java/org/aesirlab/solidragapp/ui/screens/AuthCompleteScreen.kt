@@ -9,11 +9,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.aesirlab.mylibrary.generateDPoPKey
-import org.aesirlab.mylibrary.sharedfunctions.buildTokenRequest
-import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
-import org.aesirlab.mylibrary.sharedfunctions.parseTokenResponseBody
 import org.aesirlab.solidragapp.model.AuthTokenStore
+import org.aesirlab.solidragapp.model.buildTokenRequest
+import org.aesirlab.solidragapp.model.createUnsafeOkHttpClient
+import org.aesirlab.solidragapp.model.generateDPoPKey
+import org.aesirlab.solidragapp.model.parseTokenResponseBody
 
 
 private const val TAG = "AuthCompleteScreen"

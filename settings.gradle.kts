@@ -33,14 +33,14 @@ dependencyResolutionManagement {
         maven {
             url = URI("https://repo1.maven.org/maven2/")
         }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/aesirlab/annotations-repo")
-            credentials {
-                username = "zg009"
-                password = props.getProperty("mavenKey")
-            }
-        }
+//        maven {
+//            name = "GitHubPackages"
+//            url = uri("https://maven.pkg.github.com/aesirlab/annotations-repo")
+//            credentials {
+//                username = "zg009"
+//                password = props.getProperty("mavenKey")
+//            }
+//        }
     }
 }
 

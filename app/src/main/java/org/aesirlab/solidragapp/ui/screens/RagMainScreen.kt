@@ -57,7 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.aesirlab.mylibrary.sharedfunctions.createUnsafeOkHttpClient
+import org.aesirlab.solidragapp.model.createUnsafeOkHttpClient
 import org.aesirlab.solidragapp.model.generateGetRequest
 import org.aesirlab.solidragapp.model.generatePutRequest
 import org.aesirlab.solidragapp.rag.ChatViewModel

@@ -1,4 +1,6 @@
+import java.io.FileInputStream
 import java.net.URI
+import java.util.Properties
 
 pluginManagement {
     plugins {
@@ -19,6 +21,9 @@ pluginManagement {
     }
 }
 
+val props = Properties()
+props.load(FileInputStream("credentials.properties"))
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -34,7 +39,7 @@ dependencyResolutionManagement {
             url = uri("https://maven.pkg.github.com/aesirlab/annotations-repo")
             credentials {
                 username = "zg009"
-                password = "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"
+                password = props.getProperty("mavenKey")
             }
         }
     }

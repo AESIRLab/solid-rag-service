@@ -114,7 +114,7 @@ fun RagServiceMainScreen(
                         outputStreamWriter.close()
                     } else {
                         if (appSentTime != 0L) {
-                            Log.d(TAG, "$appSentTime||$podReceivedTime||$upSentTime$upReceivedTime||${System.currentTimeMillis()}||")
+                            Log.d(TAG, "$appSentTime||$podReceivedTime||$upSentTime||$upReceivedTime||${System.currentTimeMillis()}||")
                             outputStreamWriter.write("$appSentTime||$podReceivedTime||$upSentTime$upReceivedTime||${System.currentTimeMillis()}||\n")
                         }
                     }

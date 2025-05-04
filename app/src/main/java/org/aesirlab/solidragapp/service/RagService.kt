@@ -67,7 +67,7 @@ class RagService: Service() {
 private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, val scope: CoroutineScope): Handler(Looper.getMainLooper()) {
     // this is a map of the query ids based on the messenger which sent a query
     // this is to receive responses from unifiedpush and dispatch them properly
-    private var queryIdCounter = 3300
+    private var queryIdCounter = 3650
     private val queryIdCounterLock = Mutex()
     private val queryIdsToMessenger = mutableMapOf<Int, Messenger>()
     private val checkReceiver = object : BroadcastReceiver() {

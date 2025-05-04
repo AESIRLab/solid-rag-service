@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.aesirlab.solidragapp.ui.SolidMobileItemApplication
+import org.aesirlab.solidragapp.ui.SolidRagServiceApplication
 import java.io.InputStream
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -66,7 +66,7 @@ class ChatViewModel(private val ragPipeline: RagPipeline) : ViewModel() {
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val application = (this[APPLICATION_KEY] as SolidMobileItemApplication)
+                val application = (this[APPLICATION_KEY] as SolidRagServiceApplication)
                 val ragPipeline = RagPipeline(application = application)
                 ChatViewModel(ragPipeline)
             }

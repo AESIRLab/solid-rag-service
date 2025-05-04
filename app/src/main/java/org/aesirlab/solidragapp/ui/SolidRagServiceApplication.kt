@@ -11,13 +11,13 @@ val RESOURCE_URIS = arrayOf(
 //    "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/appThree/sample_content_3.txt"
 )
 val SAVED_CHAT_URI_BASE = "https://storage.inrupt.com/9e06bd80-2380-46e0-9eaa-19c9d2baebb1/savedChats/"
-class SolidMobileItemApplication: Application() {
+class SolidRagServiceApplication: Application() {
     init {
         appInstance = this
     }
 
     companion object {
-        lateinit var appInstance: SolidMobileItemApplication
+        lateinit var appInstance: SolidRagServiceApplication
     }
 }
 

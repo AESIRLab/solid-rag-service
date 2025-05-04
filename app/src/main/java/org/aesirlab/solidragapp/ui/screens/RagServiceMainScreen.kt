@@ -13,6 +13,7 @@ import android.os.Message
 import android.os.Messenger
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,8 +36,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -47,6 +50,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.aesirlab.solidragapp.rag.MessageOwner
+import org.aesirlab.solidragapp.service.MSG_RESPONSE
 import org.aesirlab.solidragapp.service.RagService
 import org.unifiedpush.android.connector.UnifiedPush.getAckDistributor
 import org.unifiedpush.android.connector.UnifiedPush.getDistributors
@@ -97,7 +101,9 @@ fun RagServiceMainScreen(
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             when (msg.what) {
-                2 -> {
+                MSG_RESPONSE -> {
+
+                    Log.d(TAG, "service main screen received a message! :D")
                     val responseFromRag = msg.data.getString("response")
                     val appSentTime = msg.data.getLong("appSentTime")
                     val podReceivedTime = msg.data.getLong("podReceivedTime")
@@ -107,8 +113,10 @@ fun RagServiceMainScreen(
                     if (responseFromRag == "close") {
                         outputStreamWriter.close()
                     } else {
-                        Log.d(TAG, "$appSentTime||$podReceivedTime||$upSentTime$upReceivedTime||${System.currentTimeMillis()}||")
-                        outputStreamWriter.write("$appSentTime||$podReceivedTime||$upSentTime$upReceivedTime||${System.currentTimeMillis()}||\n")
+                        if (appSentTime != 0L) {
+                            Log.d(TAG, "$appSentTime||$podReceivedTime||$upSentTime$upReceivedTime||${System.currentTimeMillis()}||")
+                            outputStreamWriter.write("$appSentTime||$podReceivedTime||$upSentTime$upReceivedTime||${System.currentTimeMillis()}||\n")
+                        }
                     }
                     viewModel.appendMessage(MessageOwner.Model, responseFromRag)
                 }
@@ -152,18 +160,15 @@ fun RagServiceMainScreen(
                 return@LifecycleEventEffect
             }
 
-            if (userDistrib.value == null) {
-                Toast.makeText(appCtx, "nothing picked", Toast.LENGTH_SHORT).show()
-            } else {
+            if (userDistrib.value != null) {
                 saveDistributor(appCtx, userDistrib.value!!)
                 registerApp(appCtx)
-                registered.not()
+                registered = true
             }
         }
     }
 
     Scaffold {
-
         Column(modifier = Modifier.padding(it)) {
             Box {
                 Column {
@@ -183,13 +188,15 @@ fun RagServiceMainScreen(
                             Text("Unbind connection to Rag Service")
                         }
                     }
-                    if (userDistrib.value == null) {
+                    if (userDistrib.value == null && !registered) {
                         LaunchedEffect(Unit) {
                             delay(250)
                         }
                         val distributors = getDistributors(appCtx)
                         Log.d(TAG, distributors.toString())
-                        DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
+                        DropdownMenu(
+                            expanded = expanded.value,
+                            onDismissRequest = { expanded.value = false }) {
                             distributors.forEach { distributor ->
                                 DropdownMenuItem(text = { Text(distributor) }, onClick = {
                                     userDistrib.value = distributor
@@ -198,23 +205,35 @@ fun RagServiceMainScreen(
                             }
                         }
                     }
-
-                    Button(onClick = {
-                        if (userDistrib.value == null) {
-                            Toast.makeText(appCtx, "no value picked!", Toast.LENGTH_SHORT).show()
-                        } else {
+                    if (userDistrib.value != null && !registered) {
+                        Button(onClick = {
                             saveDistributor(appCtx, userDistrib.value!!)
                             registerApp(appCtx)
                             val broadcastIntent = Intent()
                             broadcastIntent.`package` = "registration"
                             broadcastIntent.action = "BEGIN"
                             appCtx.sendBroadcast(broadcastIntent)
-                            registered = registered.not()
+                            registered = true
+                        }) {
+                            Text("Begin broadcasting")
                         }
-
-                    }) {
-                        Text("Begin broadcasting")
                     }
+                    if (userDistrib.value != null && registered) {
+                        Column {
+                            Button(onClick = {
+                                unregisterApp(appCtx)
+                                userDistrib.value = null
+                                registered = false
+                            }) {
+                                Text("Disconnect from NTFY")
+                            }
+                            Text(text = "Current distribution service: ${userDistrib.value}", modifier = Modifier
+                                .padding(2.dp)
+                                .border(1.dp, Color.Red))
+                        }
+                    }
+
+
                     if (mService != null) {
                         OutlinedTextField(
                             value = prompt.value,

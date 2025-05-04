@@ -28,7 +28,7 @@ import org.aesirlab.solidragapp.model.createUnsafeOkHttpClient
 import org.aesirlab.solidragapp.model.generatePutRequest
 import org.aesirlab.solidragapp.rag.RagPipeline
 import org.aesirlab.solidragapp.ui.SAVE_RESOURCE_POD_URI
-import org.aesirlab.solidragapp.ui.SolidMobileItemApplication
+import org.aesirlab.solidragapp.ui.SolidRagServiceApplication
 import org.json.JSONObject
 import java.util.concurrent.Executors
 
@@ -46,7 +46,7 @@ class RagService: Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (ragPipeline == null) {
-            this.ragPipeline = RagPipeline(applicationContext as SolidMobileItemApplication)
+            this.ragPipeline = RagPipeline(applicationContext as SolidRagServiceApplication)
         }
         return startId
     }
@@ -54,7 +54,7 @@ class RagService: Service() {
     override fun onBind(intent: Intent?): IBinder? {
         synchronized(RagService::class) {
             if (ragPipeline == null) {
-                this.ragPipeline = RagPipeline(applicationContext as SolidMobileItemApplication)
+                this.ragPipeline = RagPipeline(applicationContext as SolidRagServiceApplication)
             }
             messenger = Messenger(QueryHandler(applicationContext, ragPipeline!!, scope))
         }
@@ -67,7 +67,7 @@ class RagService: Service() {
 private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, val scope: CoroutineScope): Handler(Looper.getMainLooper()) {
     // this is a map of the query ids based on the messenger which sent a query
     // this is to receive responses from unifiedpush and dispatch them properly
-    private var queryIdCounter = 1100
+    private var queryIdCounter = 3300
     private val queryIdCounterLock = Mutex()
     private val queryIdsToMessenger = mutableMapOf<Int, Messenger>()
     private val checkReceiver = object : BroadcastReceiver() {
@@ -161,8 +161,8 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, v
                                 contentType = "application/json"
                             )
                             val response = client.newCall(request).execute()
-                            Log.d(TAG, response.code.toString())
-                            Log.d(TAG, response.body!!.string())
+//                            Log.d(TAG, response.code.toString())
+//                            Log.d(TAG, response.body!!.string())
                             if (response.code !in 200..<300) {
                                 val totalResponse = ragPipeline.generateResponse(prompt) { _, _ ->
 //                            mutableResponse.plus(response)

@@ -17,16 +17,16 @@ class UPQueryReceiver : MessagingReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-//        Log.d(TAG, intent.data.toString())
-//        Log.d(TAG, "onReceive")
+        Log.d(TAG, intent.data.toString())
+        Log.d(TAG, "onReceive")
     }
+
 
     override fun onRegistrationFailed(context: Context, instance: String) {
         super.onRegistrationFailed(context, instance)
     }
 
     override fun onUnregistered(context: Context, instance: String) {
-        super.onUnregistered(context, instance)
         if (::serviceScope.isInitialized) {
             serviceScope.cancel()
         }
@@ -34,7 +34,6 @@ class UPQueryReceiver : MessagingReceiver() {
 
     // TODO: something idk
     override fun onMessage(context: Context, message: ByteArray, instance: String) {
-        super.onMessage(context, message, instance)
         Log.d(TAG, "received new message!")
         val msg = message.toString(Charsets.UTF_8)
         val jsonMessage = JSONObject(msg)

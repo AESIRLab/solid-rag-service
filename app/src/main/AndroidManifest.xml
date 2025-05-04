@@ -13,7 +13,7 @@
     </queries>
 
     <application
-        android:name=".ui.SolidMobileItemApplication"
+        android:name=".ui.SolidRagServiceApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -62,7 +62,6 @@
                 <action android:name="org.unifiedpush.android.connector.NEW_ENDPOINT"/>
                 <action android:name="org.unifiedpush.android.connector.REGISTRATION_FAILED"/>
                 <action android:name="org.unifiedpush.android.connector.REGISTRATION_REFUSED"/>
-                <action android:name="org.unifiedpush.android.connector.PUSH_EVENT"/>
             </intent-filter>
         </receiver>
 

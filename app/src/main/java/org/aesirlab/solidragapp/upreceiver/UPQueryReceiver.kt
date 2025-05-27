@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import org.aesirlab.solidragapp.ui.broadcastMessageInfo
+import org.aesirlab.solidragapp.ui.updateRegistrationInfo
 import org.json.JSONObject
 import org.unifiedpush.android.connector.MessagingReceiver
 
@@ -47,8 +48,11 @@ class UPQueryReceiver : MessagingReceiver() {
     override fun onNewEndpoint(context: Context, endpoint: String, instance: String) {
         super.onNewEndpoint(context, endpoint, instance)
         Log.d(TAG, "new endpoint found: $endpoint")
+        val newEndpoint = if (endpoint.contains("?up=1")) endpoint.substring(0, endpoint.length - 5) else endpoint
+        Log.d(TAG, "newEndpoint: $newEndpoint")
         if (!::serviceScope.isInitialized) {
             serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         }
+        context.updateRegistrationInfo(newEndpoint)
     }
 }

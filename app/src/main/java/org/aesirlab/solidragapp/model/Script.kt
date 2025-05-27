@@ -243,8 +243,14 @@ private fun generateCustomToken(method: String, uri: String, signingJwk: String)
     if (signingJwk == "") {
         throw Error("no signing jwk found")
     }
-    val jsonFromStringJWK = JSONObject(signingJwk)
-    val parsedKey = ECKey.parse(jsonFromStringJWK.toString(4))
+
+    val parsedKey = try {
+        ECKey.parse(JWK.parse(signingJwk).toJSONObject())
+    } catch (e: Exception) {
+        val jsonFromStringJWK = JSONObject(signingJwk)
+        ECKey.parse(jsonFromStringJWK.toString(4))
+    }
+
     val ecPublicJWK = parsedKey.toPublicJWK()
     val signer = ECDSASigner(parsedKey)
     val body = JWTClaimsSet.Builder().claim("htu", uri).claim("htm",
@@ -256,18 +262,31 @@ private fun generateCustomToken(method: String, uri: String, signingJwk: String)
     return signedJWT.serialize()
 }
 
-//private fun generateCustomToken(method: String, uri: String, signingJwk: String): String {
-//    val parsedKey = ECKey.parse(JWK.parse(signingJwk).toJSONObject())
-//    val ecPublicJWK = parsedKey.toPublicJWK()
-//    val signer = ECDSASigner(parsedKey)
-//    val body = JWTClaimsSet.Builder().claim("htu", uri).claim("htm",
-//        method).issueTime(Calendar.getInstance().time).jwtID(randomUUID().toString()).build()
-//    val header =
-//        JWSHeader.Builder(JWSAlgorithm.ES256).type(JOSEObjectType("dpop+jwt")).jwk(ecPublicJWK).build()
-//    val signedJWT = SignedJWT(header, body)
-//    signedJWT.sign(signer)
-//    return signedJWT.serialize()
-//}
+fun getStorage(webId: String): String {
+    val client = OkHttpClient()
+    val webIdRequest = Request.Builder().url(webId).build()
+    val webIdResponse = client.newCall(webIdRequest).execute()
+    val responseString = webIdResponse.body!!.string()
+    val byteArray = responseString.toByteArray()
+    val inStream = String(byteArray).byteInputStream()
+    val m = ModelFactory.createDefaultModel().read(inStream, null, "TURTLE")
+    val queryString = "SELECT ?o\n" +
+            "WHERE\n" +
+            "{ ?s <http://www.w3.org/ns/pim/space#storage> ?o }"
+    val q = QueryFactory.create(queryString)
+    var storage = ""
+    try {
+        val qexec = QueryExecutionFactory.create(q, m)
+        val results = qexec.execSelect()
+        while (results.hasNext()) {
+            val soln = results.nextSolution()
+            storage = soln.getResource("o").toString()
+            break
+        }
+    } catch (e: Exception) {
+    }
+    return storage
+}
 
 fun generateGetRequest(resourceUri: String, accessToken: String, signingJwk: String): Request =
     Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken("GET",
@@ -276,9 +295,33 @@ fun generateGetRequest(resourceUri: String, accessToken: String, signingJwk: Str
         "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("GET", null).build()
 
 
+//fun generatePutRequest(accessToken: String, resourceUri: String, rBody: RequestBody, signingJwk: String, contentType: String = "text/turtle"): Request {
+//    return Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken("PUT",
+//        resourceUri, signingJwk)).addHeader("Authorization", "DPoP $accessToken").addHeader("content-type",
+//        contentType).addHeader("Link",
+//        "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("PUT", rBody).build()
+//}
+
 fun generatePutRequest(accessToken: String, resourceUri: String, rBody: RequestBody, signingJwk: String, contentType: String = "text/turtle"): Request {
-    return Request.Builder().url(resourceUri).addHeader("DPoP", generateCustomToken("PUT",
-        resourceUri, signingJwk)).addHeader("Authorization", "DPoP $accessToken").addHeader("content-type",
-        contentType).addHeader("Link",
-        "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"").method("PUT", rBody).build()
+    if (signingJwk == "") {
+        throw Error("no signing jwk found")
+    }
+    val reqBuilder = Request.Builder()
+        .url(resourceUri)
+        .addHeader("DPoP", generateCustomToken("PUT",
+            resourceUri, signingJwk)
+        )
+        .addHeader("Authorization", "DPoP $accessToken")
+        .addHeader("content-type", contentType)
+        .method("PUT", rBody)
+
+    if (contentType == "text/turtle") {
+        if (resourceUri.endsWith("/")) {
+            reqBuilder.addHeader("Link", "<http://www.w3.org/ns/ldp#Resource>;rel=\"type\"")
+        } else {
+            reqBuilder.addHeader("Link", "<http://www.w3.org/ns/ldp#BasicContainer>;rel=\"type\"")
+        }
+    }
+
+    return reqBuilder.build()
 }

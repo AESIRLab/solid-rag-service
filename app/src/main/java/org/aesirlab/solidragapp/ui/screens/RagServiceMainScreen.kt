@@ -109,11 +109,11 @@ fun RagServiceMainScreen(
     var registered = rememberSaveable {
         false
     }
-    var userDistrib = rememberSaveable {
+    val userDistrib = rememberSaveable {
         mutableStateOf<String?>(null)
     }
     var internalReceiver: BroadcastReceiver? = null
-    var expanded = rememberSaveable {
+    val expanded = rememberSaveable {
         mutableStateOf(true)
     }
 

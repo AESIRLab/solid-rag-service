@@ -54,6 +54,7 @@ import org.unifiedpush.android.connector.UnifiedPush.registerApp
 import org.unifiedpush.android.connector.UnifiedPush.saveDistributor
 import org.unifiedpush.android.connector.UnifiedPush.unregisterApp
 
+private const val FILENAME = "food_calendar.txt"
 private const val TAG = "RagServiceMainScreen"
 @Composable
 fun RagServiceMainScreen(
@@ -63,6 +64,8 @@ fun RagServiceMainScreen(
     val mBound = remember {
         mutableStateOf(false)
     }
+    val appCtx = LocalContext.current.applicationContext
+    val coroutineScope = rememberCoroutineScope()
     var mService: Messenger? = remember {
         null
     }
@@ -71,6 +74,17 @@ fun RagServiceMainScreen(
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 mService = Messenger(service)
                 mBound.value = true
+                coroutineScope.launch {
+                    withContext(Dispatchers.IO) {
+                        val data = appCtx.assets.open(FILENAME)
+                        val chunks = data.bufferedReader().use { it.readText() }
+                        val newMessage = Message.obtain(null, 3, 0, 0)
+                        val b = Bundle()
+                        b.putString("chunks", chunks)
+                        newMessage.data = b
+                        mService!!.send(newMessage)
+                    }
+                }
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -98,29 +112,28 @@ fun RagServiceMainScreen(
     val receiveMessenger = Messenger(mHandler)
 
     val composableScope = rememberCoroutineScope()
-    val appCtx = LocalContext.current.applicationContext
-//    val coroutineScope = rememberCoroutineScope()
+
 //    val client = createUnsafeOkHttpClient()
 
     val prompt = rememberSaveable {
         mutableStateOf("")
     }
 
-    var registered = rememberSaveable {
-        false
+    val registered = rememberSaveable {
+        mutableStateOf(false)
     }
     val userDistrib = rememberSaveable {
-        mutableStateOf<String?>(null)
+        mutableStateOf(getAckDistributor(appCtx))
     }
-    var internalReceiver: BroadcastReceiver? = null
+    val internalReceiver: BroadcastReceiver? = null
     val expanded = rememberSaveable {
         mutableStateOf(true)
     }
 
     LifecycleEventEffect(event = Lifecycle.Event.ON_PAUSE) {
-        Log.d(TAG, "ONPAUSE paused")
+//        Log.d(TAG, "ONPAUSE paused")
         Log.d(TAG, "ONPAUSE $registered")
-        if (registered) {
+        if (registered.value) {
             unregisterApp(appCtx, instance = "test-instance")
         }
         internalReceiver?.let {
@@ -129,19 +142,17 @@ fun RagServiceMainScreen(
     }
 
     LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
-        if (!registered && appCtx != null) {
-            getAckDistributor(appCtx)?.let {
-                registerApp(appCtx)
-                return@LifecycleEventEffect
-            }
+        if (!registered.value && appCtx != null) {
 
             if (userDistrib.value == null) {
                 Toast.makeText(appCtx, "nothing picked", Toast.LENGTH_SHORT).show()
             } else {
-                saveDistributor(appCtx, userDistrib.value!!)
-                registerApp(appCtx)
-                registered.not()
+                getAckDistributor(appCtx)?.let {
+                        dist -> saveDistributor(appCtx, dist) }
+                    .also { registerApp(appCtx) }
+                registered.value = registered.value.not()
             }
+
         }
     }
 
@@ -176,28 +187,43 @@ fun RagServiceMainScreen(
                             distributors.forEach { distributor ->
                                 DropdownMenuItem(text = { Text(distributor) }, onClick = {
                                     userDistrib.value = distributor
+                                    saveDistributor(appCtx, distributor)
                                     Log.d(TAG, userDistrib.value.toString())
                                 })
                             }
                         }
                     }
+                    if (!registered.value) {
+                        Button(onClick = {
+                            if (userDistrib.value == null) {
+                                Toast.makeText(appCtx, "no value picked!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                getAckDistributor(appCtx)?.let {
+                                    dist -> saveDistributor(appCtx, dist) }
+                                    .also { registerApp(appCtx) }
 
-                    Button(onClick = {
-                        if (userDistrib.value == null) {
-                            Toast.makeText(appCtx, "no value picked!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            saveDistributor(appCtx, userDistrib.value!!)
-                            registerApp(appCtx)
-                            val broadcastIntent = Intent()
-                            broadcastIntent.`package` = "registration"
-                            broadcastIntent.action = "BEGIN"
-                            appCtx.sendBroadcast(broadcastIntent)
-                            registered = registered.not()
+                                val broadcastIntent = Intent()
+                                broadcastIntent.`package` = "registration"
+                                broadcastIntent.action = "BEGIN"
+                                appCtx.sendBroadcast(broadcastIntent)
+                                registered.value = registered.value.not()
+                            }
+                        }) {
+                            Text("Begin broadcasting")
                         }
-
-                    }) {
-                        Text("Begin broadcasting")
+                    } else {
+                        Button(onClick = {
+                            if (userDistrib.value == null) {
+                                Toast.makeText(appCtx, "no value picked!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                unregisterApp(appCtx)
+                                registered.value = registered.value.not()
+                            }
+                        }) {
+                            Text("Unregister broadcasting")
+                        }
                     }
+
                     if (mService != null) {
                         OutlinedTextField(
                             value = prompt.value,

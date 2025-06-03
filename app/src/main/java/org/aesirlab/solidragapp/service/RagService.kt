@@ -30,6 +30,7 @@ import org.aesirlab.solidragapp.rag.RagPipeline
 import org.aesirlab.solidragapp.ui.SAVE_RESOURCE_POD_URI
 import org.aesirlab.solidragapp.ui.SolidMobileItemApplication
 import org.json.JSONObject
+import java.net.UnknownHostException
 import java.util.concurrent.Executors
 
 const val MSG_PROMPT = 1
@@ -150,18 +151,28 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, v
                                 rBody = rBody,
                                 contentType = "application/json"
                             )
-                            val response = client.newCall(request).execute()
-                            Log.d(TAG, response.code.toString())
-                            Log.d(TAG, response.body!!.string())
-                            if (response.code !in 200..<300) {
+                            try {
+                                val response = client.newCall(request).execute()
+                                Log.d(TAG, response.code.toString())
+                                Log.d(TAG, response.body!!.string())
+                                if (response.code !in 200..<300) {
+                                    val totalResponse = ragPipeline.generateResponse(prompt) { _, _ ->
+//                            mutableResponse.plus(response)
+                                    }
+                                    Log.d(TAG, "totalResponse $totalResponse")
+                                    b.putString("response", totalResponse)
+                                } else {
+                                    b.putString("response", "sent to remote processing, expect a response to your prompt soon!")
+                                }
+                            } catch (e: UnknownHostException) {
+                                Log.e(TAG, e.toString())
                                 val totalResponse = ragPipeline.generateResponse(prompt) { _, _ ->
 //                            mutableResponse.plus(response)
                                 }
                                 Log.d(TAG, "totalResponse $totalResponse")
                                 b.putString("response", totalResponse)
-                            } else {
-                                b.putString("response", "sent to remote processing, expect a response to your prompt soon!")
                             }
+
                         }
                     }
                 }

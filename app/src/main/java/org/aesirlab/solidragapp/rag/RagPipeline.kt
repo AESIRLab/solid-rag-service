@@ -2,6 +2,7 @@ package org.aesirlab.solidragapp.rag
 
 
 import android.app.Application
+import android.util.Log
 import com.google.ai.edge.localagents.rag.chains.ChainConfig
 import com.google.ai.edge.localagents.rag.chains.RetrievalAndInferenceChain
 import com.google.ai.edge.localagents.rag.memory.DefaultSemanticTextMemory
@@ -32,6 +33,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** The RAG pipeline for LLM generation. */
+private const val TAG = "RAG_PIPELINE"
 class RagPipeline(application: Application) {
 
     private val mediaPipeLanguageModelOptions: LlmInferenceOptions =
@@ -40,7 +42,7 @@ class RagPipeline(application: Application) {
         ).setPreferredBackend(LlmInference.Backend.GPU).setMaxTokens(1024).build()
     private val mediaPipeLanguageModelSessionOptions: LlmInferenceSession.LlmInferenceSessionOptions =
         LlmInferenceSession.LlmInferenceSessionOptions.builder()
-            .setTemperature(1.0f)
+            .setTemperature(0.7f)
             .setTopP(0.95f)
             .setTopK(16)
             .build()
@@ -92,33 +94,20 @@ class RagPipeline(application: Application) {
     }
 
     fun memorizeChunks(data: InputStream) {
-        // BufferedReader is needed to read the *.txt file
-        // Create and Initialize BufferedReader
-        val reader = BufferedReader(InputStreamReader(data))
 
-        val sb = StringBuilder()
+        val buffer = ByteArray(256)
+        var bytesRead: Int
         val texts = mutableListOf<String>()
-        generateSequence { reader.readLine() }
-            .forEach { line ->
-                if (line.startsWith(CHUNK_SEPARATOR)) {
-                    if (sb.isNotEmpty()) {
-                        val chunk = sb.toString()
-                        texts.add(chunk)
-                    }
-                    sb.clear()
-                    sb.append(line.removePrefix(CHUNK_SEPARATOR).trim())
-                } else {
-                    sb.append(" ")
-                    sb.append(line)
-                }
-            }
-        if (sb.isNotEmpty()) {
-            texts.add(sb.toString())
+        while (data.read(buffer). also { bytesRead = it } != -1) {
+            texts.add(String(buffer, 0, bytesRead))
         }
+
+        Log.d(TAG, "${texts.size}")
         if (texts.isNotEmpty()) {
             memorize(texts)
+            Log.d(TAG, "after memorized: ${System.currentTimeMillis()}")
         }
-        reader.close()
+        data.close()
     }
 
     /** Stores input texts in the semantic text memory. */

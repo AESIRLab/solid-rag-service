@@ -40,7 +40,7 @@ class SolidMobileItemApplication: Application() {
 }
 
 fun Context.broadcastMessageInfo(
-    queryId: Int,
+    queryId: String,
     response: String
 ) {
     val broadcastIntent = Intent()

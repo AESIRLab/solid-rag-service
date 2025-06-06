@@ -38,7 +38,7 @@ class UPQueryReceiver : MessagingReceiver() {
         Log.d(TAG, "received new message!")
         val msg = message.toString(Charsets.UTF_8)
         val jsonMessage = JSONObject(msg)
-        val queryId = jsonMessage.getInt("query_id")
+        val queryId = jsonMessage.getString("query_id")
         val generatedText = jsonMessage.getString("generated_text")
         Log.d(TAG, "message: ${message.toString(Charsets.UTF_8)}")
 

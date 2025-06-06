@@ -31,6 +31,7 @@ import org.aesirlab.solidragapp.ui.SAVE_RESOURCE_POD_URI
 import org.aesirlab.solidragapp.ui.SolidMobileItemApplication
 import org.json.JSONObject
 import java.net.UnknownHostException
+import java.util.UUID
 import java.util.concurrent.Executors
 
 const val MSG_PROMPT = 1
@@ -68,9 +69,9 @@ class RagService: Service() {
 private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, val scope: CoroutineScope): Handler(Looper.getMainLooper()) {
     // this is a map of the query ids based on the messenger which sent a query
     // this is to receive responses from unifiedpush and dispatch them properly
-    private var queryIdCounter = 314
-    private val queryIdCounterLock = Mutex()
-    private val queryIdsToMessenger = mutableMapOf<Int, Messenger>()
+    private var queryIdString = UUID.randomUUID()
+    private val queryIdLock = Mutex()
+    private val queryIdsToMessenger = mutableMapOf<String, Messenger>()
     private val checkReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent!!.action) {
@@ -84,7 +85,7 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, v
                     b.putString("response", generatedText)
                     newMessage.data = b
                     // get the query id
-                    val queryId = intent.getIntExtra("queryId", -1)
+                    val queryId = intent.getStringExtra("queryId")
                     // this SHOULD be in here
                     val replyTo = queryIdsToMessenger[queryId]!!
                     try {
@@ -118,11 +119,12 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, v
             MSG_PROMPT -> {
                 // get the handler we are replying to
                 val replyTo = msg.replyTo
-                val queryId = queryIdCounter
+                val queryId = queryIdString
                 // lock the counter and update the map
-                synchronized(queryIdCounterLock) {
-                    queryIdsToMessenger[queryIdCounter] = replyTo
-                    queryIdCounter += 1
+                synchronized(queryIdLock) {
+                    queryIdsToMessenger[queryId.toString()] = replyTo
+                    queryIdString = UUID.randomUUID()
+//                    queryIdCounter += 1
                 }
                 // create a response message
                 val newMessage = Message.obtain(null, MSG_RESPONSE, 0, 0)
@@ -200,7 +202,7 @@ private class QueryHandler(val context: Context, val ragPipeline: RagPipeline, v
                 b.putString("response", generatedText)
                 newMessage.data = b
                 // get the query id
-                val queryId = msg.data.getInt("query_id")
+                val queryId = msg.data.getString("query_id")
                 // this SHOULD be in here
                 val replyTo = queryIdsToMessenger[queryId]!!
                 try {
